@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f6f8fa;
+  --surface: #ffffff;
+  --foreground: #10233f;
+  --muted-foreground: #5b6b82;
+  --border: #e3e8ef;
+
+  /* ORCA Rehab brand palette, sampled from assets/ORCA_ICON.png */
+  --orca-navy-950: #071a33;
+  --orca-navy-900: #0b2547;
+  --orca-navy-800: #0e2f5c;
+  --orca-navy-700: #143b71;
+  --orca-navy-600: #1c4a8a;
+  --orca-gold-500: #f5a623;
+  --orca-gold-400: #f8b83f;
+  --orca-gold-050: #fdf2e0;
+  --orca-sky-500: #3fa3cf;
+  --orca-sky-400: #5fb8dd;
+  --orca-sky-050: #e9f6fc;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-foreground: var(--foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+
+  --color-orca-navy-950: var(--orca-navy-950);
+  --color-orca-navy-900: var(--orca-navy-900);
+  --color-orca-navy-800: var(--orca-navy-800);
+  --color-orca-navy-700: var(--orca-navy-700);
+  --color-orca-navy-600: var(--orca-navy-600);
+  --color-orca-gold-500: var(--orca-gold-500);
+  --color-orca-gold-400: var(--orca-gold-400);
+  --color-orca-gold-050: var(--orca-gold-050);
+  --color-orca-sky-500: var(--orca-sky-500);
+  --color-orca-sky-400: var(--orca-sky-400);
+  --color-orca-sky-050: var(--orca-sky-050);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-source-serif);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+::selection {
+  background: var(--orca-gold-050);
+  color: var(--orca-navy-900);
+}
+
+/*
+ * App cards set --brand-color inline to their own logo's brand color, so
+ * hovering a card picks up a border/glow tinted to match its icon instead
+ * of one generic hover state for every app.
+ */
+.app-card {
+  --brand-color: var(--orca-navy-800);
+}
+
+.app-card:hover {
+  border-color: color-mix(in srgb, var(--brand-color) 45%, white);
+  box-shadow: 0 12px 24px -12px color-mix(in srgb, var(--brand-color) 55%, transparent);
+}
