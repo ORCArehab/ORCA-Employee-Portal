@@ -65,6 +65,16 @@ export interface PortalResource {
   accent?: BrandAccentColor;
 }
 
+export interface PortalForm {
+  id: string;
+  name: string;
+  description: string;
+  /** External form URL (opens in a new tab). Unset = shown as "Link coming soon". */
+  href?: string;
+  icon: LucideIcon;
+  accent?: BrandAccentColor;
+}
+
 export interface NavItem {
   id: string;
   label: string;
