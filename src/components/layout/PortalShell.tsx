@@ -26,18 +26,13 @@ export function PortalShell({
 
       {/* Mobile top bar */}
       <div className="fixed inset-x-0 top-0 z-40 flex items-center justify-between border-b border-border bg-surface/95 px-4 py-3 backdrop-blur lg:hidden">
-        <div className="flex items-center gap-2">
-          <Image
-            src="/brand/orca-icon.png"
-            alt=""
-            width={729}
-            height={600}
-            className="h-8 w-auto object-contain"
-          />
-          <span className="font-serif text-base font-semibold text-orca-navy-900">
-            ORCA Rehab
-          </span>
-        </div>
+        <Image
+          src="/brand/orca-lockup.png"
+          alt="ORCA Rehab"
+          width={1030}
+          height={314}
+          className="h-9 w-auto object-contain"
+        />
         <button
           type="button"
           onClick={() => setMobileOpen(true)}

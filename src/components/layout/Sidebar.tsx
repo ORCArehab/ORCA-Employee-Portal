@@ -27,23 +27,18 @@ export function Sidebar({
 
   return (
     <div className="flex h-full flex-col bg-surface">
-      <div className="flex items-center gap-2.5 px-5 pb-5 pt-6">
+      <div className="px-5 pb-5 pt-6">
         <Image
-          src="/brand/orca-icon.png"
-          alt=""
-          width={729}
-          height={600}
-          className="h-11 w-auto object-contain"
+          src="/brand/orca-lockup.png"
+          alt="ORCA Rehab"
+          width={1030}
+          height={314}
+          className="h-14 w-auto object-contain"
           priority
         />
-        <div className="leading-tight">
-          <p className="font-serif text-xl font-semibold text-orca-navy-900">
-            ORCA Rehab
-          </p>
-          <p className="text-[11px] font-medium tracking-wide text-muted-foreground">
-            Employee Portal
-          </p>
-        </div>
+        <p className="mt-1.5 text-[11px] font-medium tracking-wide text-muted-foreground">
+          Employee Portal
+        </p>
       </div>
 
       <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-2">

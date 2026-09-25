@@ -23,11 +23,11 @@ export default async function AccessDeniedPage({
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm rounded-2xl border border-border bg-surface p-8 text-center shadow-sm">
         <Image
-          src="/brand/orca-icon.png"
-          alt=""
-          width={729}
-          height={600}
-          className="mx-auto h-11 w-auto object-contain"
+          src="/brand/orca-lockup.png"
+          alt="ORCA Rehab"
+          width={1030}
+          height={314}
+          className="mx-auto h-12 w-auto object-contain"
         />
 
         <div className="mx-auto mt-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-orca-gold-050 text-orca-gold-500">
