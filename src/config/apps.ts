@@ -7,6 +7,7 @@ import {
   MessagesSquare,
   Video,
   Mail,
+  Timer,
 } from "lucide-react";
 import {
   siGmail,
@@ -24,13 +25,19 @@ import type { PortalApp } from "@/types/portal";
  *
  * Logo sourcing, in order of preference:
  *  1. `logoSrc` — a real brand asset the team dropped in `assets/` (cropped
- *     into `public/brand/`). Most accurate, used for PCC and Claimocity.
+ *     into `public/brand/`). Most accurate, used for PCC, Claimocity, and Hubstaff.
  *  2. `brandIconPath` — a verified official mark from simple-icons
  *     (https://simpleicons.org, CC0-licensed SVGs). Used for Gmail, Google
  *     Drive, Google Chat, Google Meet, and QuickBooks.
  *  3. `brandColor` alone — no verified logo, so the generic `icon` is just
  *     tinted with a rough approximation of the brand's real-world color.
  *     Used for RingCentral until we have a real asset for it too.
+ *
+ * Every external `href` points at the app's sign-in page rather than its
+ * marketing site, so employees land straight on the login screen (already
+ * signed-in users are forwarded on to the app itself). Meet has no direct
+ * login URL, so it goes through Google's account chooser with a
+ * `continue` back to Meet.
  */
 export const portalApps: PortalApp[] = [
   {
@@ -67,7 +74,7 @@ export const portalApps: PortalApp[] = [
     id: "google-meet",
     name: "Google Meet",
     description: "Video Meetings",
-    href: "https://meet.google.com",
+    href: "https://accounts.google.com/AccountChooser?continue=https%3A%2F%2Fmeet.google.com%2Flanding",
     visibility: "external",
     icon: Video,
     brandColor: siGooglemeet.hex,
@@ -84,6 +91,17 @@ export const portalApps: PortalApp[] = [
     brandIconPath: siQuickbooks.path,
   },
   {
+    id: "hubstaff",
+    name: "Hubstaff",
+    description: "Time Tracking",
+    href: "https://account.hubstaff.com/login",
+    visibility: "external",
+    icon: Timer,
+    logoSrc: "/brand/hubstaff-icon.png",
+    // Sampled from the icon's darkest blue, for the tile tint and stripe.
+    brandColor: "324CF6",
+  },
+  {
     id: "ringcentral",
     name: "RingCentral",
     description: "Calls & Messages",
@@ -97,7 +115,7 @@ export const portalApps: PortalApp[] = [
     id: "pcc",
     name: "PCC",
     description: "EHR & Care Management",
-    href: "https://pointclickcare.com",
+    href: "https://login.pointclickcare.com",
     visibility: "external",
     icon: HeartPulse,
     logoSrc: "/brand/pcc-icon.png",
@@ -110,7 +128,7 @@ export const portalApps: PortalApp[] = [
     id: "claimocity",
     name: "Claimocity",
     description: "Charge Capture & Billing",
-    href: "https://claimocity.com",
+    href: "https://desktop.claimocity.io/index.html#/login",
     visibility: "external",
     icon: Receipt,
     logoSrc: "/brand/claimocity-icon.png",
