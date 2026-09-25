@@ -3,6 +3,7 @@ import {
   LayoutGrid,
   BookOpen,
   ClipboardList,
+  MapPin,
   Users,
   LifeBuoy,
 } from "lucide-react";
@@ -13,6 +14,7 @@ export const primaryNav: NavItem[] = [
   { id: "apps", label: "Apps", href: "/apps", icon: LayoutGrid },
   { id: "resources", label: "Resources", href: "/resources", icon: BookOpen },
   { id: "forms", label: "Forms", href: "/forms", icon: ClipboardList },
+  { id: "facilities", label: "Facilities", href: "/facilities", icon: MapPin },
   { id: "directory", label: "Directory", href: "/directory", icon: Users },
   { id: "it-support", label: "IT Support", href: "/it-support", icon: LifeBuoy },
 ];

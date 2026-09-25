@@ -28,7 +28,7 @@ export const portalResources: PortalResource[] = [
     id: "facility-directory",
     name: "Facility Directory",
     description: "Contact info and locations for every ORCA facility.",
-    href: "/resources/facility-directory",
+    href: "/facilities",
     icon: Building2,
     accent: "gold",
   },
