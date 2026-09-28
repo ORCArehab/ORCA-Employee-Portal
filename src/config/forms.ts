@@ -56,6 +56,7 @@ export const portalForms: PortalForm[] = [
     id: "equipment-request",
     name: "Equipment Request",
     description: "Request equipment or supplies.",
+    href: "https://docs.google.com/forms/d/e/1FAIpQLScZeFjLMOjWJHatOJ1kDhCe7OmxqIBs9C95Dv8-1F-28qYLig/viewform?usp=header",
     icon: Laptop,
     accent: "sky",
   },
