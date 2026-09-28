@@ -11,9 +11,9 @@ export function getAllowedGoogleDomain(): string | null {
   return raw ? normalizeDomain(raw) : null;
 }
 
-function getAdminEmails(): Set<string> {
+function getEmailList(name: "ADMIN_EMAILS" | "HR_EMAILS"): Set<string> {
   return new Set(
-    (process.env.ADMIN_EMAILS ?? "")
+    (process.env[name] ?? "")
       .split(",")
       .map((email) => email.trim().toLowerCase())
       .filter(Boolean),
@@ -51,5 +51,8 @@ export function isVerifiedOrcaWorkspaceAccount(claims: {
  * the user up instead of recomputing this from env config every sign-in.
  */
 export function resolveRoleForEmail(email: string): PortalRole {
-  return getAdminEmails().has(email.toLowerCase()) ? "ADMIN" : "EMPLOYEE";
+  const normalized = email.toLowerCase();
+  if (getEmailList("ADMIN_EMAILS").has(normalized)) return "ADMIN";
+  if (getEmailList("HR_EMAILS").has(normalized)) return "HR";
+  return "EMPLOYEE";
 }

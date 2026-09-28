@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { LogOut, Settings, UserCircle } from "lucide-react";
 import { primaryNav } from "@/config/nav";
+import { hasRole } from "@/lib/permissions";
 import type { OrcaUser } from "@/types/user";
 
 const ROLE_LABELS: Record<OrcaUser["role"], string> = {
@@ -14,6 +15,7 @@ const ROLE_LABELS: Record<OrcaUser["role"], string> = {
   SCRIBE: "Scribe",
   ADMIN: "Admin",
   IT: "IT",
+  HR: "HR",
 };
 
 export function Sidebar({
@@ -42,7 +44,9 @@ export function Sidebar({
       </div>
 
       <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-2">
-        {primaryNav.map((item) => {
+        {primaryNav
+          .filter((item) => !item.allowedRoles || hasRole(user, ...item.allowedRoles))
+          .map((item) => {
           const isActive =
             item.href === "/"
               ? pathname === "/"

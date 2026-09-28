@@ -80,6 +80,11 @@ export interface NavItem {
   label: string;
   href: string;
   icon: LucideIcon;
+  /**
+   * Roles that see this link. Unset = everyone. Hiding a link is not access
+   * control — the page itself must also check (see src/lib/permissions.ts).
+   */
+  allowedRoles?: PortalRole[];
 }
 
 export interface Announcement {

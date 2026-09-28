@@ -6,6 +6,7 @@ import {
   MapPin,
   Users,
   LifeBuoy,
+  UserSearch,
 } from "lucide-react";
 import type { NavItem } from "@/types/portal";
 
@@ -17,4 +18,11 @@ export const primaryNav: NavItem[] = [
   { id: "facilities", label: "Facilities", href: "/facilities", icon: MapPin },
   { id: "directory", label: "Directory", href: "/directory", icon: Users },
   { id: "it-support", label: "IT Support", href: "/it-support", icon: LifeBuoy },
+  {
+    id: "applicants",
+    label: "Applicants",
+    href: "/hr/applicants",
+    icon: UserSearch,
+    allowedRoles: ["HR", "ADMIN"],
+  },
 ];

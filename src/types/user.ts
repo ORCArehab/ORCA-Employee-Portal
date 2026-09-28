@@ -3,7 +3,7 @@
  * src/lib/permissions.ts for how these gate access, rather than scattering
  * role checks through the app.
  */
-export type PortalRole = "EMPLOYEE" | "PROVIDER" | "SCRIBE" | "ADMIN" | "IT";
+export type PortalRole = "EMPLOYEE" | "PROVIDER" | "SCRIBE" | "ADMIN" | "IT" | "HR";
 
 /**
  * ORCA's view of an authenticated employee — "is this person an active

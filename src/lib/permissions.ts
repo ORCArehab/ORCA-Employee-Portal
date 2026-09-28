@@ -25,6 +25,11 @@ export function isAdmin(user: OrcaUser | null | undefined): boolean {
   return hasRole(user, "ADMIN");
 }
 
+/** HR staff and admins can review job applicants and résumés (/hr). */
+export function canManageApplicants(user: OrcaUser | null | undefined): boolean {
+  return hasRole(user, "HR", "ADMIN");
+}
+
 /**
  * Whether `user` may see/open `app`. This only gates the dashboard/apps UI
  * — it is not a substitute for the destination application enforcing its
