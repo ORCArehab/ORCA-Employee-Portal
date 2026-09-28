@@ -32,6 +32,11 @@ yarn-error.log*
 .env*
 !.env.example
 
+# private data dropped directly in the repo (staff/employee info, etc.) —
+# never committed. Prefix a file with PRIVATE_ to keep it out of git.
+PRIVATE_*
+ORCA_Rehab_Staff_Directory.txt
+
 # vercel
 .vercel
 
