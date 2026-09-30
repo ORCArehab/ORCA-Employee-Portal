@@ -7,10 +7,9 @@ import { signOut } from "next-auth/react";
 import { LogOut, Settings, UserCircle } from "lucide-react";
 import { primaryNav } from "@/config/nav";
 import { hasRole } from "@/lib/permissions";
-import type { OrcaUser } from "@/types/user";
+import type { OrcaUser, PortalRole } from "@/types/user";
 
-const ROLE_LABELS: Record<OrcaUser["role"], string> = {
-  EMPLOYEE: "Employee",
+const ROLE_LABELS: Record<PortalRole, string> = {
   PROVIDER: "Provider",
   SCRIBE: "Scribe",
   ADMIN: "Admin",
@@ -103,7 +102,7 @@ export function Sidebar({
             </p>
             <p className="truncate text-xs text-muted-foreground">
               {user.email}
-              {user.role !== "EMPLOYEE" ? ` · ${ROLE_LABELS[user.role]}` : ""}
+              {user.roles.length > 0 ? ` · ${user.roles.map((role) => ROLE_LABELS[role]).join(", ")}` : ""}
             </p>
           </div>
         </Link>

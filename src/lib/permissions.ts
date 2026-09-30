@@ -18,11 +18,16 @@ export function hasRole(
   user: OrcaUser | null | undefined,
   ...roles: PortalRole[]
 ): boolean {
-  return isActiveUser(user) && roles.includes(user.role);
+  return isActiveUser(user) && user.roles.some((role) => roles.includes(role));
 }
 
 export function isAdmin(user: OrcaUser | null | undefined): boolean {
   return hasRole(user, "ADMIN");
+}
+
+/** Admins manage people and roles across ORCA apps (/admin/people). */
+export function canManagePeople(user: OrcaUser | null | undefined): boolean {
+  return isAdmin(user);
 }
 
 /** HR staff and admins can review job applicants and résumés (/hr). */
@@ -41,7 +46,7 @@ export function canAccessApp(
 ): boolean {
   if (!isActiveUser(user)) return false;
   if (!app.allowedRoles || app.allowedRoles.length === 0) return true;
-  return app.allowedRoles.includes(user.role);
+  return hasRole(user, ...app.allowedRoles);
 }
 
 /** Apps `user` is authorized to see, in their configured order. */

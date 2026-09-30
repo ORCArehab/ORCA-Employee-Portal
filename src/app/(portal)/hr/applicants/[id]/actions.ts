@@ -14,7 +14,7 @@ export async function changeApplicationStatus(
   formData: FormData,
 ): Promise<StatusFormState> {
   // Server Actions are reachable by direct POST, so authorize here too — not just on the page.
-  const user = await requireHrUser();
+  await requireHrUser();
 
   const id = String(formData.get("applicationId") ?? "");
   const status = formData.get("status");
@@ -23,7 +23,7 @@ export async function changeApplicationStatus(
   }
 
   try {
-    await updateApplicationStatus(user, id, status);
+    await updateApplicationStatus(id, status);
   } catch (error) {
     console.error("[hr] status update failed", { applicationId: id, error: String(error) });
     return { status: "error", message: "Couldn't update the status. Please try again." };

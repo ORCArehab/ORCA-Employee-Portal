@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
-import { CareersApiError, createResumeLink } from "@/lib/careersApi";
+import { createResumeLink } from "@/lib/careersApi";
+import { OrcaApiError } from "@/lib/orcaApi";
 import { canManageApplicants } from "@/lib/permissions";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -19,13 +20,13 @@ export async function GET(_request: Request, { params }: RouteContext<"/hr/appli
   if (!UUID.test(id)) return new NextResponse("Not found", { status: 404 });
 
   try {
-    const { url } = await createResumeLink(user, id);
+    const { url } = await createResumeLink(id);
     const response = NextResponse.redirect(url, 303);
     response.headers.set("Cache-Control", "no-store");
     response.headers.set("Referrer-Policy", "no-referrer");
     return response;
   } catch (error) {
-    if (error instanceof CareersApiError && error.status === 404) {
+    if (error instanceof OrcaApiError && error.status === 404) {
       return new NextResponse("Not found", { status: 404 });
     }
     console.error("[hr] résumé link failed", { applicationId: id, error: String(error) });

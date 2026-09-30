@@ -15,7 +15,7 @@ export const getCurrentUser = cache(async (): Promise<OrcaUser | null> => {
   const user = (await auth())?.user;
   // Defensive: only trust sessions our own jwt/session callbacks
   // populated with ORCA's user fields, not just any Auth.js session.
-  if (!user?.id || !user.role) return null;
+  if (!user?.id || !Array.isArray(user.roles)) return null;
 
   return {
     id: user.id,
@@ -23,7 +23,7 @@ export const getCurrentUser = cache(async (): Promise<OrcaUser | null> => {
     email: user.email ?? "",
     name: user.name ?? "",
     image: user.image ?? null,
-    role: user.role,
+    roles: user.roles,
     active: user.active,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
