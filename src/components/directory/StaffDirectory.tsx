@@ -15,7 +15,7 @@ function matches(member: StaffMember, query: string): boolean {
   return (
     member.name.toLowerCase().includes(query) ||
     member.title.toLowerCase().includes(query) ||
-    member.email.toLowerCase().includes(query)
+    (member.email ?? "").toLowerCase().includes(query)
   );
 }
 
@@ -41,13 +41,15 @@ function StaffRow({
           <p className="truncate text-xs text-muted-foreground">
             {member.title}
           </p>
-          <a
-            href={`mailto:${member.email}`}
-            className="mt-1 inline-flex items-center gap-1 truncate text-xs text-orca-navy-700 hover:text-orca-navy-900 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orca-gold-500"
-          >
-            <Mail className="h-3 w-3 shrink-0" aria-hidden="true" />
-            <span className="truncate">{member.email}</span>
-          </a>
+          {member.email ? (
+            <a
+              href={`mailto:${member.email}`}
+              className="mt-1 inline-flex items-center gap-1 truncate text-xs text-orca-navy-700 hover:text-orca-navy-900 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orca-gold-500"
+            >
+              <Mail className="h-3 w-3 shrink-0" aria-hidden="true" />
+              <span className="truncate">{member.email}</span>
+            </a>
+          ) : null}
         </div>
       </div>
     </li>
@@ -113,7 +115,7 @@ export function StaffDirectory({ groups }: { groups: StaffGroup[] }) {
               <ul className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
                 {group.members.map((member) => (
                   <StaffRow
-                    key={member.email}
+                    key={member.email ?? member.name}
                     member={member}
                     accent={group.accent}
                   />

@@ -4,7 +4,8 @@ import type { BrandAccentColor } from "@/types/portal";
 export interface StaffMember {
   name: string;
   title: string;
-  email: string;
+  /** null (or omitted) for people without an ORCA email; the directory shows them without one. */
+  email?: string | null;
 }
 
 export interface StaffGroup {
