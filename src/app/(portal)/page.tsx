@@ -3,10 +3,9 @@ import { Header } from "@/components/layout/Header";
 import { AppCard } from "@/components/dashboard/AppCard";
 import { ResourceCard } from "@/components/dashboard/ResourceCard";
 import { AnnouncementsPanel } from "@/components/dashboard/AnnouncementsPanel";
-import { portalResources } from "@/config/resources";
 import { getAnnouncements } from "@/lib/announcements";
 import { getCurrentUser } from "@/lib/auth";
-import { getVisibleApps } from "@/lib/permissions";
+import { getVisibleApps, getVisibleResources } from "@/lib/permissions";
 
 export default async function DashboardPage() {
   // (portal)/layout.tsx already guarantees an authenticated user before
@@ -20,6 +19,7 @@ export default async function DashboardPage() {
     redirect("/sign-in");
   }
   const apps = getVisibleApps(user);
+  const resources = getVisibleResources(user);
 
   return (
     <div>
@@ -51,7 +51,7 @@ export default async function DashboardPage() {
               </a>
             </div>
             <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {portalResources.slice(0, 4).map((resource) => (
+              {resources.slice(0, 4).map((resource) => (
                 <ResourceCard key={resource.id} resource={resource} />
               ))}
             </div>

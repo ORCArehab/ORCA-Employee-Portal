@@ -114,7 +114,8 @@ roles, add someone before their first sign-in, or turn off access. The first
 admins are seeded by the API's `BOOTSTRAP_ADMIN_EMAILS`.
 
 Without `CAREERS_API_URL`/`CAREERS_API_KEY` (local development), roles fall
-back to `ADMIN_EMAILS` / `HR_EMAILS` and HR/admin pages show "not configured".
+back to `ADMIN_EMAILS` / `HR_EMAILS` / `PROVIDER_EMAILS` and HR/admin pages
+show "not configured".
 
 **Roles**: every active account is an employee; `ADMIN`, `HR`, `IT`,
 `PROVIDER`, `SCRIBE` grant more (`src/types/user.ts`, mirroring the API's
@@ -124,6 +125,9 @@ back to `ADMIN_EMAILS` / `HR_EMAILS` and HR/admin pages show "not configured".
 `user.email === "..."` checks around the app. `PortalApp.allowedRoles` lets
 a dashboard app card be restricted to specific roles; unset means visible
 to every active employee (today's default for all apps).
+`PortalResource.allowedRoles` does the same for Resources cards — e.g.
+**Provider Onboarding**, shown only to `PROVIDER`s once `ONBOARDING_APP_URL`
+is set (the onboarding app checks the role again when they sign in).
 
 **Route protection**: `src/proxy.ts` (Next.js 16 renamed `middleware.ts` →
 `proxy.ts`) redirects unauthenticated requests to `/sign-in` before any

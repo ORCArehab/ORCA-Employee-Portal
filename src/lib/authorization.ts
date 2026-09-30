@@ -11,7 +11,7 @@ export function getAllowedGoogleDomain(): string | null {
   return raw ? normalizeDomain(raw) : null;
 }
 
-function getEmailList(name: "ADMIN_EMAILS" | "HR_EMAILS"): Set<string> {
+function getEmailList(name: "ADMIN_EMAILS" | "HR_EMAILS" | "PROVIDER_EMAILS"): Set<string> {
   return new Set(
     (process.env[name] ?? "")
       .split(",")
@@ -54,5 +54,6 @@ export function resolveRolesForEmail(email: string): PortalRole[] {
   const roles: PortalRole[] = [];
   if (getEmailList("ADMIN_EMAILS").has(normalized)) roles.push("ADMIN");
   if (getEmailList("HR_EMAILS").has(normalized)) roles.push("HR");
+  if (getEmailList("PROVIDER_EMAILS").has(normalized)) roles.push("PROVIDER");
   return roles;
 }

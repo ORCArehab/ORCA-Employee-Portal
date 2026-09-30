@@ -59,10 +59,16 @@ export interface PortalResource {
   id: string;
   name: string;
   description: string;
+  /** A portal path, or a full URL for a separate ORCA app (opens in a new tab). */
   href: string;
   icon: LucideIcon;
   /** Icon tile accent color. Defaults to "sky" if unset. */
   accent?: BrandAccentColor;
+  /**
+   * Roles that see this resource. Unset = everyone. Hiding a card is not
+   * access control — the destination must also check.
+   */
+  allowedRoles?: PortalRole[];
 }
 
 export interface PortalForm {
