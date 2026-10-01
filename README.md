@@ -61,8 +61,10 @@ src/
     site.ts                  site-wide constants
   lib/
     auth.ts                  getCurrentUser() — server-side session accessor
-    authorization.ts         Workspace domain verification + role derivation
-    userRepository.ts        employee record seam (see Authentication below)
+    authorization.ts         Workspace domain verification (+ dev-only env roles)
+    userRepository.ts        employee record + roles, from the ORCA API
+    orcaApi.ts               shared ORCA API client (API key + user token)
+    careersApi.ts / peopleApi.ts  HR and admin routes of the ORCA API
     permissions.ts           canAccessApp / isAdmin / canAccessNOVA, etc.
     announcements.ts         getAnnouncements() — stub, returns []. Swap for
                               a real fetch once there's a data source.
@@ -94,21 +96,38 @@ Employee → /sign-in → Continue with Google → Google authenticates
 An authenticated Google account that isn't part of the Workspace domain
 never gets a session — it's redirected to `/access-denied` instead.
 
-**No database yet.** Sessions use the JWT strategy (encrypted cookie, no
-DB required). `src/types/user.ts` defines the `OrcaUser` shape a real
-employee table would use; `src/lib/userRepository.ts` is the one place
-that record gets constructed today (role derived from `ADMIN_EMAILS` /
-domain membership on every sign-in, nothing persisted). Swap in a
-database-backed `UserRepository` implementation there when one exists —
-nothing else needs to change.
+**People and roles live in the ORCA API** (the ORCA Careers API service),
+shared with the onboarding app. After the domain check, the signIn callback
+sends Google's ID token to the API, which verifies it again and returns the
+person's roles and an API **user token**. That token stays in the encrypted
+session cookie only — it's never copied into the session the browser can
+read — and goes with this portal's `CAREERS_API_KEY` on every API call. The
+API enforces roles itself on every request.
 
-**Roles**: `EMPLOYEE`, `PROVIDER`, `SCRIBE`, `ADMIN`, `IT`
-(`src/types/user.ts`). Gate access with the helpers in
+Sessions re-fetch roles every 10 minutes (`ROLE_REFRESH_INTERVAL_MS` in
+`src/auth.ts`), so navigation reflects role changes quickly; someone
+deactivated is signed out at the next refresh. Sign-in fails closed with a
+specific message on `/access-denied` if the API refuses or can't be reached.
+
+**Managing roles**: admins use **People & Roles** (`/admin/people`) to grant
+roles, add someone before their first sign-in, or turn off access. The first
+admins are seeded by the API's `BOOTSTRAP_ADMIN_EMAILS`.
+
+Without `CAREERS_API_URL`/`CAREERS_API_KEY` (local development), roles fall
+back to `ADMIN_EMAILS` / `HR_EMAILS` / `PROVIDER_EMAILS` and HR/admin pages
+show "not configured".
+
+**Roles**: every active account is an employee; `ADMIN`, `HR`, `IT`,
+`PROVIDER`, `SCRIBE` grant more (`src/types/user.ts`, mirroring the API's
+`roles` table). A person can hold several. Gate access with the helpers in
 `src/lib/permissions.ts` (`canAccessApp`, `isAdmin`,
 `canAccessNOVA`/`canAccessQuickBooks`/`canAccessPCC`) rather than scattering
 `user.email === "..."` checks around the app. `PortalApp.allowedRoles` lets
 a dashboard app card be restricted to specific roles; unset means visible
 to every active employee (today's default for all apps).
+`PortalResource.allowedRoles` does the same for Resources cards — e.g.
+**Provider Onboarding**, shown only to `PROVIDER`s once `ONBOARDING_APP_URL`
+is set (the onboarding app checks the role again when they sign in).
 
 **Route protection**: `src/proxy.ts` (Next.js 16 renamed `middleware.ts` →
 `proxy.ts`) redirects unauthenticated requests to `/sign-in` before any

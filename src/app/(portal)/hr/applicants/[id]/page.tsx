@@ -30,11 +30,11 @@ function formatAnswer(key: string, answer: string) {
 }
 
 export default async function ApplicantPage({ params }: PageProps<"/hr/applicants/[id]">) {
-  const user = await requireHrUser();
+  await requireHrUser();
   const { id } = await params;
   if (!UUID.test(id)) notFound();
 
-  const application = await getApplication(user, id);
+  const application = await getApplication(id);
   if (!application) notFound();
 
   const name = `${application.firstName} ${application.lastName}`;

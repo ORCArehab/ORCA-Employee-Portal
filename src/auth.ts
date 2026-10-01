@@ -3,10 +3,31 @@ import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import type { GoogleProfile } from "next-auth/providers/google";
 import { isVerifiedOrcaWorkspaceAccount, getAllowedGoogleDomain } from "@/lib/authorization";
-import { userRepository } from "@/lib/userRepository";
+import { userRepository, type SignInOutcome } from "@/lib/userRepository";
 import type { OrcaUser } from "@/types/user";
 
 const allowedDomain = getAllowedGoogleDomain();
+
+/**
+ * How often a session re-fetches the person's roles (and a fresh ORCA API
+ * token). Role changes show up in the portal's navigation within this long;
+ * the API itself enforces them immediately.
+ */
+const ROLE_REFRESH_INTERVAL_MS = 10 * 60 * 1000;
+
+const SIGN_IN_ERRORS: Record<Extract<SignInOutcome, { ok: false }>["reason"], string> = {
+  disabled: "AccountDisabled",
+  conflict: "AccountConflict",
+  unavailable: "SignInUnavailable",
+};
+
+/**
+ * Hands the ORCA API's sign-in result from the signIn callback (which can
+ * refuse with a specific message) to the jwt callback (which stores it).
+ * Auth.js passes the same `account` object to both within one request, so a
+ * WeakMap keyed on it needs no cleanup.
+ */
+const pendingSignIns = new WeakMap<object, Extract<SignInOutcome, { ok: true }>>();
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   // Lets Auth.js trust the incoming Host header to build callback/redirect
@@ -51,7 +72,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     error: "/access-denied",
   },
   callbacks: {
-    async signIn({ profile }) {
+    async signIn({ profile, account }) {
       const googleProfile = profile as GoogleProfile | undefined;
       const allowed = isVerifiedOrcaWorkspaceAccount({
         email: googleProfile?.email,
@@ -62,22 +83,46 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       // TODO(audit-log): once a logging store exists, record
       // { email, allowed, at: new Date().toISOString() } here for both
       // outcomes. Never log tokens, secrets, or the raw profile object.
-      if (!allowed) {
+      if (!allowed || !googleProfile || !account) {
         console.warn("[auth] rejected sign-in: not an ORCA Workspace account");
+        return false;
       }
 
-      return allowed;
+      // The ORCA API verifies the Google ID token again itself, then returns
+      // this person's roles — or refuses if they've been deactivated.
+      const outcome = await userRepository.signIn({
+        googleSubjectId: googleProfile.sub,
+        email: googleProfile.email,
+        name: googleProfile.name,
+        image: googleProfile.picture ?? null,
+        idToken: account.id_token,
+      });
+      if (!outcome.ok) {
+        console.warn("[auth] rejected sign-in", { reason: outcome.reason });
+        return `/access-denied?error=${SIGN_IN_ERRORS[outcome.reason]}`;
+      }
+
+      pendingSignIns.set(account, outcome);
+      return true;
     },
-    async jwt({ token, profile, trigger }) {
-      if (trigger === "signIn" && profile) {
-        const googleProfile = profile as GoogleProfile;
-        const orcaUser = await userRepository.upsertFromGoogleSignIn({
-          googleSubjectId: googleProfile.sub,
-          email: googleProfile.email,
-          name: googleProfile.name,
-          image: googleProfile.picture ?? null,
-        });
-        token.orcaUser = orcaUser;
+    async jwt({ token, account, trigger }) {
+      if (trigger === "signIn" || trigger === "signUp") {
+        const outcome = account ? pendingSignIns.get(account) : undefined;
+        if (!outcome) throw new Error("Sign-in result missing");
+        token.orcaUser = outcome.user;
+        token.orcaApi = outcome.apiSession ?? undefined;
+        return token;
+      }
+
+      // Pick up role changes, and end the session if the person was deactivated.
+      if (token.orcaUser && token.orcaApi && Date.now() - token.orcaApi.refreshedAt > ROLE_REFRESH_INTERVAL_MS) {
+        const result = await userRepository.refresh(token.orcaApi, token.orcaUser);
+        if (result === "signed-out") return null;
+        // "unavailable": keep the current token, which stays valid for hours, and retry next time.
+        if (result !== "unavailable") {
+          token.orcaUser = result.user;
+          token.orcaApi = result.apiSession;
+        }
       }
       return token;
     },

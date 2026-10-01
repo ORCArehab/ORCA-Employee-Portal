@@ -7,12 +7,8 @@ import {
   APPLICATION_STATUSES,
   APPLICATION_STATUS_LABELS,
 } from "@/lib/applicationStatus";
-import {
-  isCareersApiConfigured,
-  listApplications,
-  listJobs,
-  type ApplicationFilters,
-} from "@/lib/careersApi";
+import { listApplications, listJobs, type ApplicationFilters } from "@/lib/careersApi";
+import { isOrcaApiConfigured } from "@/lib/orcaApi";
 import { requireHrUser } from "@/lib/hrAccess";
 
 export const metadata: Metadata = { title: "Applicants" };
@@ -38,7 +34,7 @@ function formatDate(iso: string) {
 export default async function ApplicantsPage({
   searchParams,
 }: PageProps<"/hr/applicants">) {
-  const user = await requireHrUser();
+  await requireHrUser();
   const params = await searchParams;
 
   const filters: ApplicationFilters = {
@@ -55,9 +51,9 @@ export default async function ApplicantsPage({
 
   let data: Awaited<ReturnType<typeof listApplications>> | null = null;
   let jobs: Awaited<ReturnType<typeof listJobs>>["jobs"] = [];
-  if (isCareersApiConfigured()) {
+  if (isOrcaApiConfigured()) {
     try {
-      [data, { jobs }] = await Promise.all([listApplications(user, filters), listJobs(user)]);
+      [data, { jobs }] = await Promise.all([listApplications(filters), listJobs()]);
     } catch (error) {
       console.error("[hr] could not load applicants", { error: String(error) });
     }
@@ -167,7 +163,7 @@ export default async function ApplicantsPage({
         <EmptyState
           title="Applicants couldn't be loaded"
           body={
-            isCareersApiConfigured()
+            isOrcaApiConfigured()
               ? "The careers service didn't respond. Try again in a moment."
               : "The careers service isn't configured yet (CAREERS_API_URL / CAREERS_API_KEY)."
           }

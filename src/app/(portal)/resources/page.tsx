@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
 import { ResourceCard } from "@/components/dashboard/ResourceCard";
 import { BrandAccent } from "@/components/ui/BrandAccent";
-import { portalResources } from "@/config/resources";
+import { getCurrentUser } from "@/lib/auth";
+import { getVisibleResources } from "@/lib/permissions";
 
 export const metadata: Metadata = { title: "Resources" };
 
-export default function ResourcesPage() {
+export default async function ResourcesPage() {
+  const user = await getCurrentUser();
+  const resources = getVisibleResources(user);
+
   return (
     <div>
       <header className="mb-8">
@@ -20,7 +24,7 @@ export default function ResourcesPage() {
       </header>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        {portalResources.map((resource) => (
+        {resources.map((resource) => (
           <ResourceCard key={resource.id} resource={resource} />
         ))}
       </div>

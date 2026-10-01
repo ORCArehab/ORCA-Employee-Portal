@@ -9,6 +9,15 @@ function messageForError(error: string | undefined): string {
   if (error === "AccessDenied") {
     return "Your Google account isn't part of the ORCA Rehab organization, so it can't access this portal. If this seems wrong, contact IT.";
   }
+  if (error === "AccountDisabled") {
+    return "Your ORCA Rehab portal access has been turned off. If this seems wrong, contact IT.";
+  }
+  if (error === "AccountConflict") {
+    return "Your email address is linked to a different Google account in ORCA's records. Contact IT to have it fixed.";
+  }
+  if (error === "SignInUnavailable") {
+    return "Sign-in is temporarily unavailable because ORCA's account service couldn't be reached. Please try again in a few minutes.";
+  }
   return "Something went wrong while signing you in. Please try again.";
 }
 

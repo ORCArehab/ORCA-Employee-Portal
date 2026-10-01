@@ -1,4 +1,5 @@
 import {
+  ClipboardCheck,
   ScrollText,
   Building2,
   Users,
@@ -14,8 +15,28 @@ import type { PortalResource } from "@/types/portal";
  *
  * `accent` cycles through the three colors in the ORCA icon mark (navy,
  * gold, sky) so the grid reads as branded rather than a flat icon list.
+ *
+ * Filter with getVisibleResources() (src/lib/permissions.ts) before showing.
  */
+
+// The onboarding app (ORCA_Rehab_Onboarding) signs providers in itself and
+// checks their PROVIDER role there too. Its card is hidden until this is set.
+const onboardingAppUrl = process.env.ONBOARDING_APP_URL?.trim();
+
 export const portalResources: PortalResource[] = [
+  ...(onboardingAppUrl
+    ? [
+        {
+          id: "provider-onboarding",
+          name: "Provider Onboarding",
+          description: "Submit your credentialing documents and employee information.",
+          href: onboardingAppUrl,
+          icon: ClipboardCheck,
+          accent: "gold",
+          allowedRoles: ["PROVIDER"],
+        } satisfies PortalResource,
+      ]
+    : []),
   {
     id: "policies",
     name: "Company Policies",

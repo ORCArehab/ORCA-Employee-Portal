@@ -11,7 +11,7 @@ export function getAllowedGoogleDomain(): string | null {
   return raw ? normalizeDomain(raw) : null;
 }
 
-function getEmailList(name: "ADMIN_EMAILS" | "HR_EMAILS"): Set<string> {
+function getEmailList(name: "ADMIN_EMAILS" | "HR_EMAILS" | "PROVIDER_EMAILS"): Set<string> {
   return new Set(
     (process.env[name] ?? "")
       .split(",")
@@ -45,14 +45,15 @@ export function isVerifiedOrcaWorkspaceAccount(claims: {
 }
 
 /**
- * Derives a role for a newly (or re-)authenticated employee. There's no
- * user database yet (see userRepository.ts), so this is intentionally the
- * only place role assignment happens — a real implementation would look
- * the user up instead of recomputing this from env config every sign-in.
+ * Roles for local development without the ORCA API (see the fallback in
+ * userRepository.ts). With the API configured, roles are granted at
+ * /admin/people instead and these lists are unused.
  */
-export function resolveRoleForEmail(email: string): PortalRole {
+export function resolveRolesForEmail(email: string): PortalRole[] {
   const normalized = email.toLowerCase();
-  if (getEmailList("ADMIN_EMAILS").has(normalized)) return "ADMIN";
-  if (getEmailList("HR_EMAILS").has(normalized)) return "HR";
-  return "EMPLOYEE";
+  const roles: PortalRole[] = [];
+  if (getEmailList("ADMIN_EMAILS").has(normalized)) roles.push("ADMIN");
+  if (getEmailList("HR_EMAILS").has(normalized)) roles.push("HR");
+  if (getEmailList("PROVIDER_EMAILS").has(normalized)) roles.push("PROVIDER");
+  return roles;
 }

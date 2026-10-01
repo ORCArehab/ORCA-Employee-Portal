@@ -1,6 +1,7 @@
-import type { PortalApp } from "@/types/portal";
+import type { PortalApp, PortalResource } from "@/types/portal";
 import type { OrcaUser, PortalRole } from "@/types/user";
 import { portalApps } from "@/config/apps";
+import { portalResources } from "@/config/resources";
 
 /**
  * Central place for "is this person allowed to..." checks. Add new
@@ -18,11 +19,16 @@ export function hasRole(
   user: OrcaUser | null | undefined,
   ...roles: PortalRole[]
 ): boolean {
-  return isActiveUser(user) && roles.includes(user.role);
+  return isActiveUser(user) && user.roles.some((role) => roles.includes(role));
 }
 
 export function isAdmin(user: OrcaUser | null | undefined): boolean {
   return hasRole(user, "ADMIN");
+}
+
+/** Admins manage people and roles across ORCA apps (/admin/people). */
+export function canManagePeople(user: OrcaUser | null | undefined): boolean {
+  return isAdmin(user);
 }
 
 /** HR staff and admins can review job applicants and résumés (/hr). */
@@ -41,12 +47,29 @@ export function canAccessApp(
 ): boolean {
   if (!isActiveUser(user)) return false;
   if (!app.allowedRoles || app.allowedRoles.length === 0) return true;
-  return app.allowedRoles.includes(user.role);
+  return hasRole(user, ...app.allowedRoles);
 }
 
 /** Apps `user` is authorized to see, in their configured order. */
 export function getVisibleApps(user: OrcaUser | null | undefined): PortalApp[] {
   return portalApps.filter((app) => canAccessApp(user, app));
+}
+
+/** Whether `user` may see `resource`'s card. Unset/empty `allowedRoles` = everyone. */
+export function canSeeResource(
+  user: OrcaUser | null | undefined,
+  resource: PortalResource,
+): boolean {
+  if (!isActiveUser(user)) return false;
+  if (!resource.allowedRoles || resource.allowedRoles.length === 0) return true;
+  return hasRole(user, ...resource.allowedRoles);
+}
+
+/** Resources `user` may see, in their configured order. */
+export function getVisibleResources(
+  user: OrcaUser | null | undefined,
+): PortalResource[] {
+  return portalResources.filter((resource) => canSeeResource(user, resource));
 }
 
 function findApp(id: string): PortalApp | undefined {
