@@ -108,7 +108,7 @@ function PeopleList({
           {people.map((person) => (
             <li
               key={person.id}
-              className={`grid grid-cols-1 gap-3 px-4 py-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] lg:items-center ${person.active ? "" : "bg-orca-navy-800/[0.03]"}`}
+              className={`grid grid-cols-1 gap-3 px-4 py-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center ${person.active ? "" : "bg-orca-navy-800/[0.03]"}`}
             >
               <div className="flex min-w-0 items-center gap-3">
                 {person.imageUrl ? (
@@ -121,7 +121,6 @@ function PeopleList({
                   <p className="truncate text-sm font-medium text-orca-navy-900">
                     {person.name || person.email}
                     {person.id === currentUserId ? <span className="font-normal text-muted-foreground"> (you)</span> : null}
-                    {!person.active ? <span className="ml-2 text-xs font-medium text-red-700">Inactive</span> : null}
                   </p>
                   <p className="truncate text-xs text-muted-foreground">
                     {person.email} ·{" "}
