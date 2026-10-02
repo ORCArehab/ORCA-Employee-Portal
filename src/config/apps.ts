@@ -142,7 +142,8 @@ export const portalApps: PortalApp[] = [
     id: "orca-admin",
     name: "Operations",
     description: "ORCA Admin Dashboard",
-    href: "https://admin.orcarehab.com",
+    // Its Vercel address until admin.orcarehab.com has a DNS record.
+    href: "https://orca-admin-dun.vercel.app",
     visibility: "external",
     icon: Activity,
     // The admin app's accent blue.

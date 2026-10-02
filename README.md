@@ -142,7 +142,7 @@ configuration steps.
 ## Operations dashboard (admins)
 
 The operations dashboard (provider documentation, scribe production) is its own app, **ORCA Admin**
-(`ORCA_Admin_Board`, https://admin.orcarehab.com). The portal only links to it: an "Operations" tile in
+(`ORCA_Admin_Board`, https://orca-admin-dun.vercel.app; admin.orcarehab.com once its DNS record exists). The portal only links to it: an "Operations" tile in
 `src/config/apps.ts`, shown to people with the `ADMIN` role. ORCA Admin signs people in itself and checks
 the role again, as does the ORCA API.
 
