@@ -1,4 +1,5 @@
 import {
+  Activity,
   FolderOpen,
   Clock3,
   PhoneCall,
@@ -134,5 +135,19 @@ export const portalApps: PortalApp[] = [
     logoSrc: "/brand/claimocity-icon.png",
     // Approximate color sampled from the icon itself, for the tile tint.
     brandColor: "4661E6",
+  },
+  {
+    // ORCA's own admin app (ORCA_Admin_Board): operations dashboard and admin tools.
+    // It signs people in itself and only lets ADMINs in; hiding the card here is not the access check.
+    id: "orca-admin",
+    name: "Operations",
+    description: "ORCA Admin Dashboard",
+    // Its Vercel address until admin.orcarehab.com has a DNS record.
+    href: "https://orca-admin-dun.vercel.app",
+    visibility: "external",
+    icon: Activity,
+    // The admin app's accent blue.
+    brandColor: "1F5F8B",
+    allowedRoles: ["ADMIN"],
   },
 ];
