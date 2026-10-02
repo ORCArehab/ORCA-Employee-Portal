@@ -1,10 +1,10 @@
-import type { PortalRole } from "@/types/user";
+type RoleStyle = { badge: string; dot: string; checked: string };
 
 /**
  * One color per role, so a person's access reads at a glance. Class names are
  * written out in full so Tailwind picks them up.
  */
-export const ROLE_STYLES: Record<PortalRole, { badge: string; dot: string; checked: string }> = {
+const ROLE_STYLES: Record<string, RoleStyle> = {
   ADMIN: {
     badge: "bg-orca-navy-900 text-white ring-orca-navy-900",
     dot: "bg-white",
@@ -25,6 +25,11 @@ export const ROLE_STYLES: Record<PortalRole, { badge: string; dot: string; check
     dot: "bg-emerald-500",
     checked: "has-[:checked]:bg-emerald-50 has-[:checked]:text-emerald-800 has-[:checked]:ring-emerald-300",
   },
+  HIM: {
+    badge: "bg-sky-50 text-sky-800 ring-sky-200",
+    dot: "bg-sky-500",
+    checked: "has-[:checked]:bg-sky-50 has-[:checked]:text-sky-800 has-[:checked]:ring-sky-300",
+  },
   SCRIBE: {
     badge: "bg-amber-50 text-amber-900 ring-amber-200",
     dot: "bg-amber-500",
@@ -32,10 +37,21 @@ export const ROLE_STYLES: Record<PortalRole, { badge: string; dot: string; check
   },
 };
 
+/** A role the API adds later still renders, in neutral grey, instead of breaking the page. */
+const FALLBACK_STYLE: RoleStyle = {
+  badge: "bg-orca-navy-800/5 text-orca-navy-800 ring-border",
+  dot: "bg-orca-navy-700",
+  checked: "has-[:checked]:bg-orca-navy-800/5 has-[:checked]:text-orca-navy-900 has-[:checked]:ring-orca-navy-700/40",
+};
+
+export function roleStyle(role: string): RoleStyle {
+  return ROLE_STYLES[role] ?? FALLBACK_STYLE;
+}
+
 const BASE = "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset";
 
-export function RoleBadge({ role, label, title }: { role: PortalRole; label: string; title?: string }) {
-  const style = ROLE_STYLES[role];
+export function RoleBadge({ role, label, title }: { role: string; label: string; title?: string }) {
+  const style = roleStyle(role);
   return (
     <span className={`${BASE} ${style.badge}`} title={title}>
       <span className={`h-1.5 w-1.5 rounded-full ${style.dot}`} aria-hidden="true" />

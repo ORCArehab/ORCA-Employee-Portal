@@ -3,9 +3,8 @@
 import { useActionState, useState } from "react";
 import { Check, Loader2, Pencil } from "lucide-react";
 import { updateAccessAction, type AccessFormState } from "@/app/(portal)/admin/people/actions";
-import { EmployeeBadge, InactiveBadge, ROLE_STYLES, RoleBadge } from "@/components/admin/RoleBadge";
+import { EmployeeBadge, InactiveBadge, RoleBadge, roleStyle } from "@/components/admin/RoleBadge";
 import type { RoleDefinition } from "@/lib/peopleApi";
-import type { PortalRole } from "@/types/user";
 
 const initialState: AccessFormState = { status: "idle" };
 
@@ -76,7 +75,7 @@ export function PersonAccessForm({
           <label
             key={role.key}
             title={role.description}
-            className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium text-muted-foreground ring-1 ring-inset ring-border transition hover:bg-orca-navy-800/5 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-orca-gold-500 ${ROLE_STYLES[role.key as PortalRole].checked}`}
+            className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium text-muted-foreground ring-1 ring-inset ring-border transition hover:bg-orca-navy-800/5 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-orca-gold-500 ${roleStyle(role.key).checked}`}
           >
             <input
               type="checkbox"
