@@ -1,6 +1,5 @@
 import "server-only";
 import { orcaApiRequestAsUser } from "@/lib/orcaApi";
-import type { PortalRole } from "@/types/user";
 
 /**
  * Admin routes of the ORCA API: the people who can sign in to ORCA apps and
@@ -20,7 +19,8 @@ export interface Person {
 }
 
 export interface RoleDefinition {
-  key: PortalRole;
+  /** The API owns the role list, so it can include roles this portal doesn't use yet (e.g. HIM). */
+  key: string;
   label: string;
   description: string;
 }
@@ -51,10 +51,10 @@ export function setPersonActive(id: string, active: boolean) {
   return request<{ changed: boolean }>(`/people/${encodeURIComponent(id)}`, { method: "PATCH", ...json({ active }) });
 }
 
-export function grantRole(id: string, role: PortalRole) {
-  return request<{ changed: boolean }>(`/people/${encodeURIComponent(id)}/roles/${role}`, { method: "PUT" });
+export function grantRole(id: string, role: string) {
+  return request<{ changed: boolean }>(`/people/${encodeURIComponent(id)}/roles/${encodeURIComponent(role)}`, { method: "PUT" });
 }
 
-export function revokeRole(id: string, role: PortalRole) {
-  return request<{ changed: boolean }>(`/people/${encodeURIComponent(id)}/roles/${role}`, { method: "DELETE" });
+export function revokeRole(id: string, role: string) {
+  return request<{ changed: boolean }>(`/people/${encodeURIComponent(id)}/roles/${encodeURIComponent(role)}`, { method: "DELETE" });
 }
