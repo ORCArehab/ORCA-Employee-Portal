@@ -31,6 +31,14 @@ export function canManagePeople(user: OrcaUser | null | undefined): boolean {
   return isAdmin(user);
 }
 
+/**
+ * The Operations dashboard (/operations): provider documentation and scribe production.
+ * Mirrors the ORCA API's dashboard.read permission (ADMIN for now); the API enforces it too.
+ */
+export function canViewOperations(user: OrcaUser | null | undefined): boolean {
+  return isAdmin(user);
+}
+
 /** HR staff and admins can review job applicants and résumés (/hr). */
 export function canManageApplicants(user: OrcaUser | null | undefined): boolean {
   return hasRole(user, "HR", "ADMIN");

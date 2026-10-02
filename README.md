@@ -31,6 +31,7 @@ Open [http://localhost:3000](http://localhost:3000). You'll be redirected to
 npm run build   # production build
 npm run start   # serve the production build
 npm run lint    # eslint
+npm test        # unit tests (vitest)
 ```
 
 ## Structure
@@ -137,6 +138,24 @@ server-side check — defense in depth, not just the proxy layer.
 See `.env.example` for required environment variables and the setup
 instructions given alongside this codebase for exact Google Cloud/Workspace
 configuration steps.
+
+## Operations dashboard (admins)
+
+`/operations` shows provider documentation and scribe production for people with the `ADMIN` role (`canViewOperations` in `src/lib/permissions.ts`, mirroring the ORCA API's `dashboard.read` permission; the API checks it again on every request). The data comes from the ORCA API's `/v1/dashboard/*` routes (`src/lib/operationsApi.ts`), which compute it from ORCA's Google Sheets trackers. This portal needs no extra settings beyond `CAREERS_API_URL` / `CAREERS_API_KEY`.
+
+```
+(portal)/operations/            Overview: summary, Needs attention, provider table
+  providers/ , providers/[name] provider list (search) and detail
+  scribes/ , scribes/[name]     scribe production (weekly/monthly; daily on detail)
+components/operations/          shared UI (header, metric strip, table, notices) + providers/ + scribes/
+lib/operations/                 formatting, Needs-attention criteria, period labels (unit tested: npm test)
+```
+
+Display rules:
+- Completion (completed ÷ notes with a known status) always appears next to status coverage. Low coverage is marked, and a missing rate shows as `—`.
+- Unknown status is never shown as outstanding.
+- Scribes are descriptive only: alphabetical, with no targets or rankings, and uploads never compared with production.
+- Parser diagnostics stay out of the UI. Affected providers and scribes get a subtle "Some source data needs review".
 
 ## Branding
 
