@@ -3,8 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireAdminUser } from "@/lib/adminAccess";
 import { OrcaApiError } from "@/lib/orcaApi";
-import { addPerson, grantRole, revokeRole, setPersonActive } from "@/lib/peopleApi";
-import { PORTAL_ROLES } from "@/types/user";
+import { addPerson, grantRole, listRoles, revokeRole, setPersonActive } from "@/lib/peopleApi";
 
 export type AccessFormState = { status: "idle" | "saved" | "error"; message?: string };
 
@@ -58,12 +57,15 @@ export async function updateAccessAction(_previous: AccessFormState, formData: F
   const active = formData.get("active") === "on";
 
   try {
+    // Every role the API defines, including ones the portal doesn't use itself (e.g. HIM).
+    const { roles } = await listRoles();
+    const roleKeys = roles.map((role) => role.key);
     // Grants first, so moving ADMIN between people never briefly leaves none.
-    for (const role of PORTAL_ROLES) {
+    for (const role of roleKeys) {
       if (wantedRoles.has(role) && !currentRoles.has(role)) await grantRole(id, role);
     }
     if (active !== wasActive) await setPersonActive(id, active);
-    for (const role of PORTAL_ROLES) {
+    for (const role of roleKeys) {
       if (!wantedRoles.has(role) && currentRoles.has(role)) await revokeRole(id, role);
     }
   } catch (error) {
