@@ -37,6 +37,14 @@ export function canManageApplicants(user: OrcaUser | null | undefined): boolean 
 }
 
 /**
+ * Providers see their own schedule (/schedule). The ORCA API checks the same thing
+ * (schedule.read_own) and decides whose schedule it is from the session.
+ */
+export function canViewOwnSchedule(user: OrcaUser | null | undefined): boolean {
+  return hasRole(user, "PROVIDER");
+}
+
+/**
  * Whether `user` may see/open `app`. This only gates the dashboard/apps UI
  * — it is not a substitute for the destination application enforcing its
  * own access control once it has a real integration.

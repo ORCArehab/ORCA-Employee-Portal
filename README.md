@@ -50,6 +50,7 @@ src/
       apps/                     full app directory
       resources/ ...            resources hub + placeholder sub-pages
       directory/, it-support/, nova/, settings/, profile/, announcements/
+      schedule/                 My Schedule (providers only, read-only)
   components/
     layout/                  Sidebar, Header, PortalShell (mobile drawer)
     dashboard/               AppCard, ResourceCard, AnnouncementsPanel
@@ -66,6 +67,7 @@ src/
     userRepository.ts        employee record + roles, from the ORCA API
     orcaApi.ts               shared ORCA API client (API key + user token)
     careersApi.ts / peopleApi.ts  HR and admin routes of the ORCA API
+    scheduleApi.ts / schedule.ts  the signed-in provider's own schedule (API call; weeks and labels)
     permissions.ts           canAccessApp / isAdmin / canAccessNOVA, etc.
     announcements.ts         getAnnouncements() — stub, returns []. Swap for
                               a real fetch once there's a data source.
@@ -138,6 +140,14 @@ server-side check — defense in depth, not just the proxy layer.
 See `.env.example` for required environment variables and the setup
 instructions given alongside this codebase for exact Google Cloud/Workspace
 configuration steps.
+
+## My Schedule (providers)
+
+`/schedule` shows a provider where they're scheduled, a week at a time (`?week=YYYY-MM-DD`), with facility, time, coverage and notes, and works on phones. It's read-only: Operations manages the schedule in ORCA Admin, and both apps read the same records in the ORCA API.
+
+- Shown to people with the `PROVIDER` role (nav item and `canViewOwnSchedule`); anyone else gets a 404. The API checks the same permission (`schedule.read_own`).
+- The API decides whose schedule it is from the session (the person's linked staff record); the portal never sends an id, and its key can only call `GET /v1/schedule/me`.
+- A provider whose ORCA account isn't linked to a staff record yet sees a message saying so. Admins link them with `PUT /v1/org/staff/:id/person` in the ORCA API.
 
 ## Operations dashboard (admins)
 

@@ -1,4 +1,5 @@
 import {
+  CalendarDays,
   LayoutDashboard,
   LayoutGrid,
   BookOpen,
@@ -13,6 +14,13 @@ import type { NavItem } from "@/types/portal";
 
 export const primaryNav: NavItem[] = [
   { id: "dashboard", label: "Dashboard", href: "/", icon: LayoutDashboard },
+  {
+    id: "my-schedule",
+    label: "My Schedule",
+    href: "/schedule",
+    icon: CalendarDays,
+    allowedRoles: ["PROVIDER"],
+  },
   { id: "apps", label: "Apps", href: "/apps", icon: LayoutGrid },
   { id: "resources", label: "Resources", href: "/resources", icon: BookOpen },
   { id: "forms", label: "Forms", href: "/forms", icon: ClipboardList },
