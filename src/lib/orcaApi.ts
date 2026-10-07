@@ -15,7 +15,11 @@ import { getToken } from "next-auth/jwt";
  */
 
 export class OrcaApiError extends Error {
-  constructor(readonly status: number) {
+  /** The API's own explanation (its `error` field), when it gave one. Safe to show: never a secret. */
+  constructor(
+    readonly status: number,
+    readonly apiMessage: string | null = null,
+  ) {
     super(`ORCA API responded ${status}`);
   }
 }
@@ -55,7 +59,10 @@ export async function orcaApiRequest<T>(
     cache: "no-store",
     signal: AbortSignal.timeout(15_000),
   });
-  if (!res.ok) throw new OrcaApiError(res.status);
+  if (!res.ok) {
+    const body = (await res.json().catch(() => null)) as { error?: unknown } | null;
+    throw new OrcaApiError(res.status, typeof body?.error === "string" ? body.error : null);
+  }
   return (await res.json()) as T;
 }
 

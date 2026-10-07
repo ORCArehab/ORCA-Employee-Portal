@@ -50,9 +50,14 @@ src/
       apps/                     full app directory
       resources/ ...            resources hub + placeholder sub-pages
       directory/, it-support/, nova/, settings/, profile/, announcements/
+      my-schedule/              a provider's own week (?week=YYYY-MM-DD), read-only
+      my-facilities/            a provider's assigned facilities + their own PCC
+                                 login at each (add, update, show the password)
   components/
     layout/                  Sidebar, Header, PortalShell (mobile drawer)
     dashboard/               AppCard, ResourceCard, AnnouncementsPanel
+    provider/                WeekSchedule, PccAccessCard, ProviderPanels (the
+                              dashboard's "This week" and "My facilities")
     ui/                      OrcaMark, BrandAccent, PlaceholderPage
   config/
     apps.ts                  ORCA app cards — name, description, href, icon,
@@ -66,6 +71,8 @@ src/
     userRepository.ts        employee record + roles, from the ORCA API
     orcaApi.ts               shared ORCA API client (API key + user token)
     careersApi.ts / peopleApi.ts  HR and admin routes of the ORCA API
+    provider/                 a provider's own schedule, facilities and PCC logins
+                              (/v1/schedule/me, /v1/my), week helpers, labels
     permissions.ts           canAccessApp / isAdmin / canAccessNOVA, etc.
     announcements.ts         getAnnouncements() — stub, returns []. Swap for
                               a real fetch once there's a data source.
@@ -171,3 +178,18 @@ were sampled directly from the logo.
 
 No fake employee, patient, or company data is used anywhere — placeholders
 say so explicitly instead of inventing content.
+
+## For providers
+
+People with the **Provider** role see **My Schedule** and **My Facilities** in the sidebar, and
+"This week" plus "My facilities" at the top of the dashboard. Everything comes from the ORCA API
+through their linked staff record; the portal never sends a staff id. A sign-in that isn't linked
+to a staff record yet sees a note saying so. Links are made in ORCA Admin.
+
+- **Schedule** is read-only here. ORCA Admin's schedule board is where it's kept.
+- **Facilities** are the ones ORCA has assigned the provider to (in ORCA Admin).
+- **PCC logins:** providers add or update their own username, password, sign-in code method and
+  notes, only at facilities they're assigned to. Passwords are encrypted by the ORCA API and
+  never sent back except when the provider clicks Show. That reveal is recorded and hides
+  after 30 seconds. Every change is stamped with who, when and "portal", and ORCA Admin shows
+  those stamps on the facility page.

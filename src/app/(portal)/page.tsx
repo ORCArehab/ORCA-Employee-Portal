@@ -5,7 +5,8 @@ import { ResourceCard } from "@/components/dashboard/ResourceCard";
 import { AnnouncementsPanel } from "@/components/dashboard/AnnouncementsPanel";
 import { getAnnouncements } from "@/lib/announcements";
 import { getCurrentUser } from "@/lib/auth";
-import { getVisibleApps, getVisibleResources } from "@/lib/permissions";
+import { ProviderPanels } from "@/components/provider/ProviderPanels";
+import { getVisibleApps, getVisibleResources, hasRole } from "@/lib/permissions";
 
 export default async function DashboardPage() {
   // (portal)/layout.tsx already guarantees an authenticated user before
@@ -24,6 +25,12 @@ export default async function DashboardPage() {
   return (
     <div>
       <Header user={user} />
+
+      {hasRole(user, "PROVIDER") && (
+        <div className="mb-8">
+          <ProviderPanels />
+        </div>
+      )}
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="space-y-8 lg:col-span-2">
