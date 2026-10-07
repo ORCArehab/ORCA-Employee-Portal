@@ -2,7 +2,7 @@ import Link from "next/link";
 import { AlertCircle, Building2, CalendarDays, ChevronRight } from "lucide-react";
 import { getMyFacilities, getMySchedule } from "@/lib/provider/api";
 import { addDays, today, weekLabel, weekStart } from "@/lib/provider/week";
-import { assignmentText, needsPcc } from "./FacilityLines";
+import { assignmentText, loginProblem } from "./FacilityLines";
 import { LOAD_FAILED, NOT_LINKED } from "./ProviderNotice";
 import { WeekSchedule } from "./WeekSchedule";
 
@@ -22,7 +22,7 @@ export async function ProviderPanels() {
       </section>
 
       <section className="min-w-0 rounded-2xl border border-border bg-surface p-5 lg:col-span-2">
-        <PanelHeading icon={<Building2 className="h-4.5 w-4.5 text-orca-gold-500" aria-hidden="true" />} title="My facilities" href="/my-facilities" link="PCC logins" />
+        <PanelHeading icon={<Building2 className="h-4.5 w-4.5 text-orca-gold-500" aria-hidden="true" />} title="My facilities" href="/my-facilities" link="Hospital logins" />
         {!facilities ? (
           <Muted>{LOAD_FAILED}</Muted>
         ) : !facilities.linked ? (
@@ -38,9 +38,9 @@ export async function ProviderPanels() {
                     <span className="block break-words text-sm font-medium text-orca-navy-900 group-hover:text-orca-navy-700">{f.name}</span>
                     <span className="block text-xs text-muted-foreground">{assignmentText(f)}</span>
                   </span>
-                  {needsPcc(f) && (
+                  {loginProblem(f) && (
                     <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-orca-gold-050 px-2 py-0.5 text-[11px] font-medium text-orca-navy-900">
-                      <AlertCircle className="h-3 w-3" aria-hidden="true" /> {f.pcc?.status === "disabled" ? "PCC not working" : "Add PCC login"}
+                      <AlertCircle className="h-3 w-3" aria-hidden="true" /> {loginProblem(f)}
                     </span>
                   )}
                   <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />

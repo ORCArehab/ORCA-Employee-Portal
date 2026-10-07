@@ -37,7 +37,7 @@ export function sortEntries(entries: ScheduleEntry[]): ScheduleEntry[] {
   return [...entries].sort((a, b) => a.date.localeCompare(b.date) || rank(a).localeCompare(rank(b)));
 }
 
-/** "Changed by you", "Changed by ORCA (pat@orcarehab.com)" — who last set a PCC username or password. */
+/** "Changed by you", "Changed by ORCA (pat@orcarehab.com)" — who last set a hospital login's username or password. */
 export function changedBy(email: string | null, via: string | null, myEmail: string): string | null {
   if (!email) return null;
   if (email.toLowerCase() === myEmail.toLowerCase()) return "you";
