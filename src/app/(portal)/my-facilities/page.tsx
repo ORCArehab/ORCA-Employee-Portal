@@ -3,16 +3,16 @@ import { redirect } from "next/navigation";
 import { MapPin, Phone } from "lucide-react";
 import { BrandAccent } from "@/components/ui/BrandAccent";
 import { addressText, assignmentText } from "@/components/provider/FacilityLines";
-import { PccAccessCard } from "@/components/provider/PccAccessCard";
+import { HospitalLogins } from "@/components/provider/HospitalLogins";
 import { LOAD_FAILED, NOT_LINKED, ProviderNotice } from "@/components/provider/ProviderNotice";
 import { getCurrentUser } from "@/lib/auth";
 import { hasRole } from "@/lib/permissions";
 import { getMyFacilities } from "@/lib/provider/api";
-import type { MyFacilities } from "@/lib/provider/types";
+import { loginsAt, type MyFacilities } from "@/lib/provider/types";
 
 export const metadata: Metadata = { title: "My Facilities" };
 
-/** The facilities ORCA has assigned the signed-in provider to, each with their PCC login there. */
+/** The facilities ORCA has assigned the signed-in provider to, each with their hospital logins there. */
 export default async function MyFacilitiesPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/sign-in");
@@ -30,7 +30,7 @@ export default async function MyFacilitiesPage() {
       <header className="mb-8">
         <h1 className="font-serif text-2xl font-semibold text-orca-navy-900 sm:text-3xl">My Facilities</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Where ORCA has you assigned, and your PointClickCare login for each. Keep your logins up to date here; ORCA&apos;s admin team sees each change.
+          Where ORCA has you assigned, and your hospital logins for each (PointClickCare and any other system). Keep them up to date here; ORCA&apos;s admin team sees each change.
         </p>
         <BrandAccent className="mt-4" />
       </header>
@@ -70,8 +70,8 @@ export default async function MyFacilitiesPage() {
                 </div>
               </div>
               <div className="mt-4 border-t border-border pt-4">
-                <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">PointClickCare</h3>
-                <PccAccessCard facilityId={f.id} facilityName={f.name} access={f.pcc} myEmail={user.email} />
+                <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Hospital logins</h3>
+                <HospitalLogins facilityId={f.id} facilityName={f.name} logins={loginsAt(f)} myEmail={user.email} />
               </div>
             </li>
           ))}

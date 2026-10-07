@@ -53,9 +53,12 @@ export const ACCESS_STATUS_LABELS: Record<string, string> = {
   unknown: "Not recorded",
 };
 
-/** My PCC login at one facility. Never includes the password. */
-export interface MyPccAccess {
+/** One of my hospital logins at a facility (PointClickCare or another system). Never includes the password. */
+export interface HospitalLogin {
   id: string;
+  /** "pcc" = PointClickCare; "other" = another hospital system, named in systemName. Older API: absent (PCC). */
+  system?: "pcc" | "other";
+  systemName?: string | null;
   organization: string | null;
   username: string | null;
   loginMethod: LoginMethod;
@@ -78,8 +81,18 @@ export interface MyFacility {
   address: { line1: string | null; city: string | null; state: string | null; postalCode: string | null };
   phone: string | null;
   assignments: { id: string; type: string; effectiveFrom: string | null }[];
-  pcc: MyPccAccess | null;
+  /** Every login I have here, PointClickCare first (newer API). */
+  logins?: HospitalLogin[];
+  /** My PointClickCare login here (older API). */
+  pcc: HospitalLogin | null;
 }
+
+
+/** My logins at a facility, whichever API version answered. */
+export const loginsAt = (f: Pick<MyFacility, "logins" | "pcc">): HospitalLogin[] => f.logins ?? (f.pcc ? [f.pcc] : []);
+
+/** "PointClickCare", or the other system's name. */
+export const systemLabel = (l: Pick<HospitalLogin, "system" | "systemName">) => (l.system === "other" ? (l.systemName ?? "Other system") : "PointClickCare");
 
 export interface MyFacilities {
   linked: boolean;
