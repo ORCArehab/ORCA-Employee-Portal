@@ -53,10 +53,27 @@ describe("schedule entries", () => {
   });
 });
 
-describe("PCC change stamps", () => {
+describe("hospital login change stamps", () => {
   it("says you when you made the change", () => {
     expect(changedBy("Kim@orcarehab.com", "portal", "kim@orcarehab.com")).toBe("you");
     expect(changedBy("him@orcarehab.com", "admin", "kim@orcarehab.com")).toBe("ORCA (him@orcarehab.com)");
     expect(changedBy(null, null, "kim@orcarehab.com")).toBeNull();
+  });
+});
+
+describe("hospital logins", () => {
+  it("names the system and finds what needs attention", async () => {
+    const { loginsAt, systemLabel } = await import("./types");
+    const { loginProblem } = await import("@/components/provider/FacilityLines");
+    const login = (overrides: object) => ({ id: "l", username: "u", hasPassword: true, status: "active", ...overrides }) as never;
+    expect(systemLabel({ system: "pcc" })).toBe("PointClickCare");
+    expect(systemLabel({})).toBe("PointClickCare"); // older API: PCC only
+    expect(systemLabel({ system: "other", systemName: "Fluency Flex" })).toBe("Fluency Flex");
+    const f = (logins: unknown[] | undefined, pcc: unknown = null) => ({ logins, pcc }) as never;
+    expect(loginsAt(f(undefined, login({})))).toHaveLength(1); // older API
+    expect(loginProblem(f([]))).toBe("Add a login");
+    expect(loginProblem(f([login({ system: "pcc" })]))).toBeNull();
+    expect(loginProblem(f([login({ system: "pcc" }), login({ system: "other", systemName: "Fluency Flex", status: "disabled" })]))).toBe("Fluency Flex not working");
+    expect(loginProblem(f([login({ system: "pcc", status: "disabled" })]))).toBe("PCC not working");
   });
 });

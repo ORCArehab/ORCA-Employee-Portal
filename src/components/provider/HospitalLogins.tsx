@@ -1,20 +1,55 @@
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
-import { Check, Copy, Eye, EyeOff, KeyRound, Loader2, Pencil } from "lucide-react";
-import { revealPccPassword, savePccAccess, type PccFormState } from "@/app/(portal)/my-facilities/actions";
+import { Check, Copy, Eye, EyeOff, KeyRound, Loader2, Pencil, Plus, Trash2 } from "lucide-react";
+import { deleteHospitalLogin, revealPccPassword, savePccAccess, type PccFormState } from "@/app/(portal)/my-facilities/actions";
 import { changedBy, shortDate } from "@/lib/provider/format";
-import { ACCESS_STATUS_LABELS, LOGIN_METHOD_LABELS, LOGIN_METHODS, type MyPccAccess } from "@/lib/provider/types";
+import { ACCESS_STATUS_LABELS, LOGIN_METHOD_LABELS, LOGIN_METHODS, systemLabel, type HospitalLogin } from "@/lib/provider/types";
 
 const REVEAL_SECONDS = 30;
 const initial: PccFormState = { status: "idle" };
 
 /**
- * My PointClickCare login at one facility: view it, show the saved password for a moment, or add
- * and change it. ORCA sees each change (who and when) in ORCA Admin.
+ * My hospital logins at one facility: PointClickCare and any other hospital system (named). View
+ * each, show its saved password for a moment, update or delete it, or add another. ORCA sees each
+ * change (who and when) in ORCA Admin.
  */
-export function PccAccessCard({ facilityId, facilityName, access, myEmail }: { facilityId: string; facilityName: string; access: MyPccAccess | null; myEmail: string }) {
+export function HospitalLogins({ facilityId, facilityName, logins, myEmail }: { facilityId: string; facilityName: string; logins: HospitalLogin[]; myEmail: string }) {
+  const [adding, setAdding] = useState(false);
+  const hasPcc = logins.some((l) => systemLabel(l) === "PointClickCare");
+  return (
+    <div className="space-y-4">
+      {logins.length === 0 && !adding && <p className="text-sm text-muted-foreground">No hospital logins saved for this facility yet.</p>}
+      {logins.map((l) => (
+        <LoginCard key={l.id} login={l} facilityId={facilityId} facilityName={facilityName} myEmail={myEmail} />
+      ))}
+      {adding ? (
+        <NewLogin facilityId={facilityId} facilityName={facilityName} defaultSystem={hasPcc ? "other" : "pcc"} onDone={() => setAdding(false)} />
+      ) : (
+        <button type="button" onClick={() => setAdding(true)} className={logins.length === 0 ? buttonPrimary : buttonQuiet}>
+          {logins.length === 0 ? <KeyRound className="h-4 w-4" aria-hidden="true" /> : <Plus className="h-4 w-4" aria-hidden="true" />}
+          {logins.length === 0 ? "Add a login" : "Add another login"}
+        </button>
+      )}
+    </div>
+  );
+}
+
+function NewLogin({ facilityId, facilityName, defaultSystem, onDone }: { facilityId: string; facilityName: string; defaultSystem: "pcc" | "other"; onDone: () => void }) {
+  const [state, formAction, pending] = useActionState(savePccAccess, initial);
+  const [lastHandled, setLastHandled] = useState(state);
+  if (state !== lastHandled) {
+    setLastHandled(state);
+    if (state.status === "saved") onDone();
+  }
+  return <PccForm facilityId={facilityId} facilityName={facilityName} access={null} defaultSystem={defaultSystem} formAction={formAction} pending={pending} state={state} onCancel={onDone} />;
+}
+
+function LoginCard({ login: access, facilityId, facilityName, myEmail }: { login: HospitalLogin; facilityId: string; facilityName: string; myEmail: string }) {
   const [editing, setEditing] = useState(false);
+  const [confirming, setConfirming] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const [state, formAction, pending] = useActionState(savePccAccess, initial);
   const [lastHandled, setLastHandled] = useState(state);
 
@@ -24,18 +59,11 @@ export function PccAccessCard({ facilityId, facilityName, access, myEmail }: { f
     if (state.status === "saved") setEditing(false);
   }
 
-  if (editing || (!access && state.status === "error")) {
-    return <PccForm facilityId={facilityId} facilityName={facilityName} access={access} formAction={formAction} pending={pending} state={state} onCancel={() => setEditing(false)} />;
-  }
-
-  if (!access) {
+  const label = systemLabel(access);
+  if (editing) {
     return (
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-muted-foreground">No PCC login saved for this facility yet.</p>
-        <button type="button" onClick={() => setEditing(true)} className={buttonPrimary}>
-          <KeyRound className="h-4 w-4" aria-hidden="true" /> Add PCC login
-        </button>
-        {state.status === "saved" && <Status state={state} />}
+      <div className="rounded-xl border border-border p-4">
+        <PccForm facilityId={facilityId} facilityName={facilityName} access={access} defaultSystem={access.system ?? "pcc"} formAction={formAction} pending={pending} state={state} onCancel={() => setEditing(false)} />
       </div>
     );
   }
@@ -43,7 +71,8 @@ export function PccAccessCard({ facilityId, facilityName, access, myEmail }: { f
   const usernameBy = changedBy(access.usernameSetBy, access.usernameSetVia, myEmail);
   const passwordBy = changedBy(access.passwordSetBy, access.passwordSetVia, myEmail);
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 rounded-xl border border-border p-4">
+      <h4 className="text-sm font-semibold text-orca-navy-900">{label}</h4>
       {access.status === "disabled" && (
         <p className="rounded-xl bg-orca-gold-050 px-3 py-2 text-xs text-orca-navy-900">ORCA has this login marked as not working. If you&apos;ve fixed it, update it here.</p>
       )}
@@ -67,7 +96,10 @@ export function PccAccessCard({ facilityId, facilityName, access, myEmail }: { f
         </div>
         <div>
           <dt className="text-xs text-muted-foreground">Status</dt>
-          <dd className="text-orca-navy-900">{ACCESS_STATUS_LABELS[access.status] ?? access.status}{access.organization && <span className="text-muted-foreground"> · {access.organization}</span>}</dd>
+          <dd className="text-orca-navy-900">
+            {ACCESS_STATUS_LABELS[access.status] ?? access.status}
+            {access.organization && <span className="text-muted-foreground"> · {access.organization}</span>}
+          </dd>
         </div>
         {access.notes && (
           <div className="sm:col-span-2">
@@ -76,12 +108,43 @@ export function PccAccessCard({ facilityId, facilityName, access, myEmail }: { f
           </div>
         )}
       </dl>
-      <div className="flex flex-wrap items-center gap-3">
-        <button type="button" onClick={() => setEditing(true)} className={buttonQuiet}>
-          <Pencil className="h-3.5 w-3.5" aria-hidden="true" /> Update login
-        </button>
-        <Status state={state} />
-      </div>
+      {confirming ? (
+        <div role="alert" className="space-y-2 rounded-xl border border-red-200 bg-red-50 p-3 text-xs text-red-800">
+          <p>Delete your {label} login for {facilityName}? The saved password is deleted too. This can&apos;t be undone.</p>
+          <div className="flex flex-wrap gap-2">
+            <button type="button" onClick={() => setConfirming(false)} disabled={deleting} className={buttonQuiet}>
+              Keep it
+            </button>
+            <button
+              type="button"
+              disabled={deleting}
+              onClick={async () => {
+                setDeleting(true);
+                setDeleteError(null);
+                const result = await deleteHospitalLogin(access.id);
+                if (result.error) {
+                  setDeleteError(result.error);
+                  setDeleting(false);
+                }
+              }}
+              className="inline-flex items-center gap-1.5 rounded-xl bg-red-700 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-red-800 disabled:opacity-70"
+            >
+              {deleting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Trash2 className="h-4 w-4" aria-hidden="true" />} Delete login
+            </button>
+          </div>
+          {deleteError && <p>{deleteError}</p>}
+        </div>
+      ) : (
+        <div className="flex flex-wrap items-center gap-3">
+          <button type="button" onClick={() => setEditing(true)} className={buttonQuiet}>
+            <Pencil className="h-3.5 w-3.5" aria-hidden="true" /> Update
+          </button>
+          <button type="button" onClick={() => setConfirming(true)} className="inline-flex items-center gap-1 text-sm font-medium text-red-700 hover:text-red-800">
+            <Trash2 className="h-3.5 w-3.5" aria-hidden="true" /> Delete
+          </button>
+          <Status state={state} />
+        </div>
+      )}
     </div>
   );
 }
@@ -90,6 +153,7 @@ function PccForm({
   facilityId,
   facilityName,
   access,
+  defaultSystem,
   formAction,
   pending,
   state,
@@ -97,19 +161,37 @@ function PccForm({
 }: {
   facilityId: string;
   facilityName: string;
-  access: MyPccAccess | null;
+  access: HospitalLogin | null;
+  defaultSystem: "pcc" | "other";
   formAction: (formData: FormData) => void;
   pending: boolean;
   state: PccFormState;
   onCancel: () => void;
 }) {
-  const id = `pcc-${facilityId}`;
+  const id = `login-${access?.id ?? `new-${facilityId}`}`;
+  const [system, setSystem] = useState<"pcc" | "other">(access?.system ?? defaultSystem);
   return (
     <form action={formAction} className="space-y-3" autoComplete="off">
       <input type="hidden" name="facilityId" value={facilityId} />
       {access && <input type="hidden" name="accessId" value={access.id} />}
-      <p className="text-xs text-muted-foreground">Your PointClickCare login for {facilityName}. Only you and ORCA&apos;s admin team can see it; the password is encrypted.</p>
+      <input type="hidden" name="system" value={system} />
+      <p className="text-xs text-muted-foreground">
+        Your {access ? systemLabel(access) : "hospital"} login for {facilityName}. Only you and ORCA&apos;s admin team can see it; the password is encrypted.
+      </p>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        {!access && (
+          <Field label="System" htmlFor={`${id}-system`}>
+            <select id={`${id}-system`} value={system} onChange={(e) => setSystem(e.target.value === "other" ? "other" : "pcc")} className={input}>
+              <option value="pcc">PointClickCare</option>
+              <option value="other">Another hospital system…</option>
+            </select>
+          </Field>
+        )}
+        {system === "other" && (
+          <Field label="System name" htmlFor={`${id}-system-name`} hint="For example Workspace / Fluency Flex">
+            <input id={`${id}-system-name`} name="systemName" defaultValue={access?.systemName ?? ""} maxLength={100} required className={input} />
+          </Field>
+        )}
         <Field label="Username" htmlFor={`${id}-user`}>
           <input id={`${id}-user`} name="username" defaultValue={access?.username ?? ""} autoComplete="off" spellCheck={false} className={input} />
         </Field>
@@ -141,7 +223,7 @@ function PccForm({
         </button>
         <button type="submit" disabled={pending} className={buttonPrimary}>
           {pending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
-          Save
+          {access ? "Save" : "Add login"}
         </button>
       </div>
     </form>
