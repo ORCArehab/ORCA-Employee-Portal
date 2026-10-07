@@ -46,8 +46,8 @@ export function isVerifiedOrcaWorkspaceAccount(claims: {
 
 /**
  * Roles for local development without the ORCA API (see the fallback in
- * userRepository.ts). With the API configured, roles are granted at
- * /admin/people instead and these lists are unused.
+ * userRepository.ts). With the API configured, roles are granted in ORCA Admin
+ * (People & Roles, or an employee's Category) and these lists are unused.
  */
 export function resolveRolesForEmail(email: string): PortalRole[] {
   const normalized = email.toLowerCase();

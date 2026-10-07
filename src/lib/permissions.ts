@@ -26,11 +26,6 @@ export function isAdmin(user: OrcaUser | null | undefined): boolean {
   return hasRole(user, "ADMIN");
 }
 
-/** Admins manage people and roles across ORCA apps (/admin/people). */
-export function canManagePeople(user: OrcaUser | null | undefined): boolean {
-  return isAdmin(user);
-}
-
 /** HR staff and admins can review job applicants and résumés (/hr). */
 export function canManageApplicants(user: OrcaUser | null | undefined): boolean {
   return hasRole(user, "HR", "ADMIN");

@@ -1,7 +1,8 @@
 /**
  * Roles that can be granted on top of being an employee (every active ORCA
  * account is one). Mirrors the `roles` table in the ORCA Careers API, which
- * is where roles are granted — see /admin/people. See src/lib/permissions.ts
+ * is where roles are granted, from ORCA Admin (People & Roles, or an employee's
+ * Category on their profile). See src/lib/permissions.ts
  * for how these gate access, rather than scattering role checks through the
  * app.
  */
