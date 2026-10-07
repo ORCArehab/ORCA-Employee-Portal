@@ -7,7 +7,6 @@ import {
   Users,
   LifeBuoy,
   UserSearch,
-  ShieldCheck,
 } from "lucide-react";
 import type { NavItem } from "@/types/portal";
 
@@ -25,12 +24,5 @@ export const primaryNav: NavItem[] = [
     href: "/hr/applicants",
     icon: UserSearch,
     allowedRoles: ["HR", "ADMIN"],
-  },
-  {
-    id: "people",
-    label: "People & Roles",
-    href: "/admin/people",
-    icon: ShieldCheck,
-    allowedRoles: ["ADMIN"],
   },
 ];

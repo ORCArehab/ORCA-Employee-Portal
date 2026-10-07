@@ -40,6 +40,9 @@ import type { PortalApp } from "@/types/portal";
  * login URL, so it goes through Google's account chooser with a
  * `continue` back to Meet.
  */
+/** ORCA Admin (Operations). Its Vercel address until admin.orcarehab.com has a DNS record. */
+export const OPERATIONS_APP_URL = "https://orca-admin-dun.vercel.app";
+
 export const portalApps: PortalApp[] = [
   {
     id: "gmail",
@@ -137,17 +140,17 @@ export const portalApps: PortalApp[] = [
     brandColor: "4661E6",
   },
   {
-    // ORCA's own admin app (ORCA_Admin_Board): operations dashboard and admin tools.
-    // It signs people in itself and only lets ADMINs in; hiding the card here is not the access check.
+    // ORCA's own admin app (ORCA_Admin_Board): operations, employee records, and people & roles.
+    // It signs people in itself and lets Admin and HR in (HR sees Employees); hiding the card here
+    // is not the access check.
     id: "orca-admin",
     name: "Operations",
     description: "ORCA Admin Dashboard",
-    // Its Vercel address until admin.orcarehab.com has a DNS record.
-    href: "https://orca-admin-dun.vercel.app",
+    href: OPERATIONS_APP_URL,
     visibility: "external",
     icon: Activity,
     // The admin app's accent blue.
     brandColor: "1F5F8B",
-    allowedRoles: ["ADMIN"],
+    allowedRoles: ["ADMIN", "HR"],
   },
 ];
