@@ -2,11 +2,14 @@ import type { Metadata } from "next";
 import { ExternalLink } from "lucide-react";
 import { BrandAccent } from "@/components/ui/BrandAccent";
 import { FacilityDirectory } from "@/components/facilities/FacilityDirectory";
-import { facilities, facilitiesMap } from "@/config/facilities";
+import { facilitiesMap } from "@/config/facilities";
+import { getFacilities } from "@/lib/orgDirectory";
 
 export const metadata: Metadata = { title: "Facilities" };
 
-export default function FacilitiesPage() {
+/** The list is live from the ORCA API on every visit; the map is ORCA's Google My Maps. */
+export default async function FacilitiesPage() {
+  const facilities = await getFacilities();
   return (
     <div>
       <header className="mb-8">
@@ -39,7 +42,11 @@ export default function FacilitiesPage() {
         <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
       </a>
 
-      <FacilityDirectory facilities={facilities} />
+      {facilities === null ? (
+        <p className="mt-8 text-sm text-muted-foreground">The facility list couldn&apos;t be loaded right now. Please try again in a moment.</p>
+      ) : (
+        <FacilityDirectory facilities={facilities} />
+      )}
     </div>
   );
 }

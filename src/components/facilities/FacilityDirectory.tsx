@@ -2,7 +2,7 @@
 
 import { useId, useMemo, useState } from "react";
 import { Building2, ChevronDown, Search } from "lucide-react";
-import type { Facility } from "@/config/facilities";
+import type { Facility } from "@/lib/orgShape";
 
 function matches(facility: Facility, query: string): boolean {
   return (
@@ -39,12 +39,17 @@ function FacilityRow({ facility }: { facility: Facility }) {
         />
       </button>
       {open ? (
-        <p
-          id={detailsId}
-          className="border-t border-border px-3 py-2 pl-[3.25rem] text-xs text-muted-foreground"
-        >
-          {facility.address}
-        </p>
+        <div id={detailsId} className="space-y-0.5 border-t border-border px-3 py-2 pl-[3.25rem] text-xs text-muted-foreground">
+          {facility.type && <p>{facility.type}</p>}
+          <p>{facility.address || "Address not recorded"}</p>
+          {facility.phone && (
+            <p>
+              <a href={`tel:${facility.phone.replace(/[^\d+]/g, "")}`} className="text-orca-navy-700 hover:text-orca-navy-900 hover:underline">
+                {facility.phone}
+              </a>
+            </p>
+          )}
+        </div>
       ) : null}
     </li>
   );
@@ -94,7 +99,7 @@ export function FacilityDirectory({ facilities }: { facilities: Facility[] }) {
       {visible.length > 0 ? (
         <ul className="mt-3 grid grid-cols-1 items-start gap-2 sm:grid-cols-2 lg:grid-cols-3">
           {visible.map((facility) => (
-            <FacilityRow key={facility.name} facility={facility} />
+            <FacilityRow key={facility.id} facility={facility} />
           ))}
         </ul>
       ) : (

@@ -1,9 +1,9 @@
 "use client";
 
 import { useId, useMemo, useState } from "react";
-import { Mail, Search, UserRound } from "lucide-react";
+import { Mail, Phone, Search, UserRound } from "lucide-react";
 import type { BrandAccentColor } from "@/types/portal";
-import type { StaffGroup, StaffMember } from "@/config/staff";
+import type { StaffGroup, StaffMember } from "@/lib/orgShape";
 
 const ACCENT_CLASSES: Record<BrandAccentColor, string> = {
   navy: "bg-orca-navy-800/10 text-orca-navy-800",
@@ -15,7 +15,8 @@ function matches(member: StaffMember, query: string): boolean {
   return (
     member.name.toLowerCase().includes(query) ||
     member.title.toLowerCase().includes(query) ||
-    (member.email ?? "").toLowerCase().includes(query)
+    (member.email ?? "").toLowerCase().includes(query) ||
+    (member.phone ?? "").includes(query)
   );
 }
 
@@ -48,6 +49,15 @@ function StaffRow({
             >
               <Mail className="h-3 w-3 shrink-0" aria-hidden="true" />
               <span className="truncate">{member.email}</span>
+            </a>
+          ) : null}
+          {member.phone ? (
+            <a
+              href={`tel:${member.phone.replace(/[^\d+]/g, "")}`}
+              className="mt-0.5 flex items-center gap-1 truncate text-xs text-orca-navy-700 hover:text-orca-navy-900 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orca-gold-500"
+            >
+              <Phone className="h-3 w-3 shrink-0" aria-hidden="true" />
+              <span className="truncate">{member.phone}</span>
             </a>
           ) : null}
         </div>
@@ -115,7 +125,7 @@ export function StaffDirectory({ groups }: { groups: StaffGroup[] }) {
               <ul className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
                 {group.members.map((member) => (
                   <StaffRow
-                    key={member.email ?? member.name}
+                    key={member.id}
                     member={member}
                     accent={group.accent}
                   />
