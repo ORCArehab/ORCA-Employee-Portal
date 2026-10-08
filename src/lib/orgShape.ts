@@ -70,8 +70,15 @@ const GROUPS: { id: string; name: string; accent: BrandAccentColor; categories: 
   { id: "scribes", name: "Scribes", accent: "sky", categories: ["scribe"] },
 ];
 
+/** "Co-Founder", "Co-founder & CEO", "Cofounder": anyone whose job title says so is listed first. */
+const FOUNDER = /\bco-?\s?founder\b/i;
+
+/** The title without the co-founder part, which the group heading already says: "Co-Founder · CEO / MD" → "CEO / MD". */
+const withoutFounder = (title: string) => title.replace(FOUNDER, "").replace(/^[\s·|,/&-]+|[\s·|,/&-]+$/g, "").trim();
+
 /**
- * Directory groups: Providers, Administrative & Operations, Scribes, then Other. People hidden from
+ * Directory groups: Co-Founders (by job title, set in ORCA Admin), Providers, Administrative &
+ * Operations, Scribes, then Other. People hidden from
  * the directory or no longer with ORCA are left out (the API already does this for most viewers;
  * HR and admins get everyone, so it's applied here too).
  */
@@ -85,9 +92,19 @@ export function staffGroups(staff: ApiStaff[]): StaffGroup[] {
     phone: s.ringcentralPhone ?? null,
   });
   const byName = (a: StaffMember, b: StaffMember) => a.name.localeCompare(b.name);
+  const founders = shown.filter((s) => s.title && FOUNDER.test(s.title));
+  const rest = shown.filter((s) => !founders.includes(s));
   const known = new Set(GROUPS.flatMap((g) => g.categories));
-  const groups: StaffGroup[] = GROUPS.map((g) => ({ id: g.id, name: g.name, accent: g.accent, members: shown.filter((s) => g.categories.includes(s.category)).map(member).sort(byName) }));
-  groups.push({ id: "other", name: "Other Staff", accent: "navy", members: shown.filter((s) => !known.has(s.category)).map(member).sort(byName) });
+  const groups: StaffGroup[] = [
+    {
+      id: "co-founders",
+      name: "Co-Founders",
+      accent: "gold",
+      members: founders.map((s) => ({ ...member(s), title: withoutFounder(s.title!) || "Co-Founder" })).sort(byName),
+    },
+  ];
+  groups.push(...GROUPS.map((g) => ({ id: g.id, name: g.name, accent: g.accent, members: rest.filter((s) => g.categories.includes(s.category)).map(member).sort(byName) })));
+  groups.push({ id: "other", name: "Other Staff", accent: "navy", members: rest.filter((s) => !known.has(s.category)).map(member).sort(byName) });
   return groups.filter((g) => g.members.length > 0);
 }
 
