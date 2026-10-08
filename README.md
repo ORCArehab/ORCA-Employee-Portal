@@ -203,7 +203,7 @@ Both pages read the ORCA API on every visit, never cached: `/v1/org/staff` and
 `/v1/org/facilities`. Those are the same records ORCA Admin edits, so a new hire, a change of
 title, or a new facility shows up here on the next page load. Nothing in this repo needs updating.
 
-- **Directory:** groups are Providers, Administrative & Operations, Scribes and Other Staff. Each
+- **Directory:** groups are Co-Founders (anyone whose job title in ORCA Admin includes "Co-Founder", for example "Co-Founder · CEO / MD"), Providers, Administrative & Operations, Scribes and Other Staff. Each
   person shows their work email and RingCentral line. People hidden from the directory, or no
   longer with ORCA, are left out.
 - **Facilities:** every facility that isn't inactive or archived, sorted by region (or county),
