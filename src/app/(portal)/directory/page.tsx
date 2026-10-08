@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { BrandAccent } from "@/components/ui/BrandAccent";
 import { StaffDirectory } from "@/components/directory/StaffDirectory";
-import { getStaffDirectory } from "@/config/staff";
+import { getStaffDirectory } from "@/lib/orgDirectory";
 
 export const metadata: Metadata = { title: "Employee Directory" };
 
-export default function DirectoryPage() {
-  const groups = getStaffDirectory();
+/** Live from the ORCA API on every visit: the same staff records ORCA Admin maintains. */
+export default async function DirectoryPage() {
+  const groups = await getStaffDirectory();
 
   return (
     <div>
@@ -20,12 +21,12 @@ export default function DirectoryPage() {
         <BrandAccent className="mt-4" />
       </header>
 
-      {groups.length > 0 ? (
-        <StaffDirectory groups={groups} />
-      ) : (
+      {groups === null ? (
         <p className="text-sm text-muted-foreground">
-          The staff directory isn&apos;t configured yet.
+          The staff directory couldn&apos;t be loaded right now. Please try again in a moment.
         </p>
+      ) : (
+        <StaffDirectory groups={groups} />
       )}
     </div>
   );

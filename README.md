@@ -196,3 +196,17 @@ to a staff record yet sees a note saying so. Links are made in ORCA Admin.
   never sent back except when the provider clicks Show. That reveal is recorded and hides
   after 30 seconds. Every change is stamped with who, when and "portal", and ORCA Admin shows
   those stamps on the facility page.
+
+## Directory and Facilities
+
+Both pages read the ORCA API on every visit, never cached: `/v1/org/staff` and
+`/v1/org/facilities`. Those are the same records ORCA Admin edits, so a new hire, a change of
+title, or a new facility shows up here on the next page load. Nothing in this repo needs updating.
+
+- **Directory:** groups are Providers, Administrative & Operations, Scribes and Other Staff. Each
+  person shows their work email and RingCentral line. People hidden from the directory, or no
+  longer with ORCA, are left out.
+- **Facilities:** every facility that isn't inactive or archived, sorted by region (or county),
+  with address, phone and type. The map above the list is still ORCA's Google My Maps map.
+- If the API can't be reached, the page says so instead of showing an outdated list. Shaping is in
+  `src/lib/orgShape.ts`, with tests; fetching is in `src/lib/orgDirectory.ts`.
