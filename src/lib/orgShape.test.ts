@@ -37,6 +37,21 @@ describe("directory", () => {
   });
 });
 
+describe("co-founders", () => {
+  it("lists anyone titled co-founder first, once, with the rest of their title", () => {
+    const groups = staffGroups([
+      staff({ displayName: "Dr Zed", category: "physician", title: "Co-Founder · President / MD" }),
+      staff({ displayName: "Dr Ann", category: "physician", title: "Cofounder, CEO / MD" }),
+      staff({ displayName: "Dr Bo", category: "physician", title: "Co-founder" }),
+      staff({ displayName: "Cy Office", category: "administrative", title: "Executive Assistant" }),
+    ]);
+    expect(groups.map((g) => [g.name, g.members.map((m) => `${m.name}: ${m.title}`)])).toEqual([
+      ["Co-Founders", ["Dr Ann: CEO / MD", "Dr Bo: Co-Founder", "Dr Zed: President / MD"]],
+      ["Administrative & Operations", ["Cy Office: Executive Assistant"]],
+    ]);
+  });
+});
+
 describe("facilities", () => {
   it("lists current facilities by region with a one-line address", () => {
     const list = facilityList([
