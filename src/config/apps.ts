@@ -9,6 +9,7 @@ import {
   Video,
   Mail,
   Timer,
+  Stethoscope,
 } from "lucide-react";
 import {
   siGmail,
@@ -43,7 +44,23 @@ import type { PortalApp } from "@/types/portal";
 /** ORCA Admin (Operations). Its Vercel address until admin.orcarehab.com has a DNS record. */
 export const OPERATIONS_APP_URL = "https://orca-admin-dun.vercel.app";
 
+/** NOVA, ORCA's clinical documentation app. */
+export const NOVA_APP_URL = "https://nova.orcarehab.com";
+
 export const portalApps: PortalApp[] = [
+  {
+    // ORCA's own app (NOVA). It signs people in itself, through the ORCA API, and lets only
+    // Providers and Scribes in; hiding the card here is not the access check.
+    id: "nova",
+    name: "NOVA",
+    description: "Clinical Documentation",
+    href: NOVA_APP_URL,
+    visibility: "external",
+    icon: Stethoscope,
+    // NOVA's own accent purple.
+    brandColor: "9333EA",
+    allowedRoles: ["PROVIDER", "SCRIBE"],
+  },
   {
     id: "gmail",
     name: "Gmail",
