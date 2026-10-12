@@ -141,7 +141,7 @@ export const portalApps: PortalApp[] = [
   },
   {
     // ORCA's own admin app (ORCA_Admin_Board): operations, employee records, and people & roles.
-    // It signs people in itself and lets Admin and HR in (HR sees Employees); hiding the card here
+    // It signs people in itself and lets Admin, HR and HIM in (HR sees Employees, HIM sees Facilities); hiding the card here
     // is not the access check.
     id: "orca-admin",
     name: "Operations",
@@ -151,6 +151,6 @@ export const portalApps: PortalApp[] = [
     icon: Activity,
     // The admin app's accent blue.
     brandColor: "1F5F8B",
-    allowedRoles: ["ADMIN", "HR"],
+    allowedRoles: ["ADMIN", "HR", "HIM"],
   },
 ];
