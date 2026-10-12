@@ -136,9 +136,7 @@ a dashboard app card be restricted to specific roles; unset means visible
 to every active employee (today's default for all apps).
 `PortalResource.allowedRoles` does the same for Resources cards — e.g.
 **Provider Onboarding**, shown only to `PROVIDER`s once `ONBOARDING_APP_URL`
-is set (the onboarding app checks the role again when they sign in). The **NOVA**
-app card (https://nova.orcarehab.com) is shown to `PROVIDER`s and `SCRIBE`s;
-NOVA checks the role again when they sign in.
+is set (the onboarding app checks the role again when they sign in).
 
 **Route protection**: `src/proxy.ts` (Next.js 16 renamed `middleware.ts` →
 `proxy.ts`) redirects unauthenticated requests to `/sign-in` before any
