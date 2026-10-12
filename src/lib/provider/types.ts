@@ -30,7 +30,12 @@ export interface MySchedule {
   facilities: ScheduleFacility[];
   /** Names of the people being covered for. */
   coveredStaff: { id: string; displayName: string }[];
+  /** Weeks (their Mondays) in the range that ORCA hasn't published yet. Absent from an older API. */
+  unpublishedWeeks?: string[];
 }
+
+/** Whether ORCA has published the week starting on `weekStart` (a Monday). */
+export const isPublished = (schedule: Pick<MySchedule, "unpublishedWeeks">, weekStart: string) => !schedule.unpublishedWeeks?.includes(weekStart);
 
 export const LOGIN_METHODS = ["ringcentral_sms", "sms", "authenticator_app", "email", "none", "other", "unknown"] as const;
 export type LoginMethod = (typeof LOGIN_METHODS)[number];

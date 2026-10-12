@@ -3,7 +3,8 @@ import { AlertCircle, Building2, CalendarDays, ChevronRight } from "lucide-react
 import { getMyFacilities, getMySchedule } from "@/lib/provider/api";
 import { addDays, today, weekLabel, weekStart } from "@/lib/provider/week";
 import { assignmentText, loginProblem } from "./FacilityLines";
-import { LOAD_FAILED, NOT_LINKED } from "./ProviderNotice";
+import { isPublished } from "@/lib/provider/types";
+import { LOAD_FAILED, NOT_LINKED, NOT_PUBLISHED } from "./ProviderNotice";
 import { WeekSchedule } from "./WeekSchedule";
 
 /** Dashboard panels for providers: this week's schedule and My Facilities. Each loads on its own. */
@@ -18,7 +19,15 @@ export async function ProviderPanels() {
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
       <section className="min-w-0 rounded-2xl border border-border bg-surface p-5 lg:col-span-3">
         <PanelHeading icon={<CalendarDays className="h-4.5 w-4.5 text-orca-gold-500" aria-hidden="true" />} title="This week" detail={weekLabel(start)} href="/my-schedule" link="Full schedule" />
-        {!schedule ? <Muted>{LOAD_FAILED}</Muted> : !schedule.linked ? <Muted>{NOT_LINKED}</Muted> : <WeekSchedule schedule={schedule} start={start} compact />}
+        {!schedule ? (
+          <Muted>{LOAD_FAILED}</Muted>
+        ) : !schedule.linked ? (
+          <Muted>{NOT_LINKED}</Muted>
+        ) : !isPublished(schedule, start) ? (
+          <Muted>{NOT_PUBLISHED}</Muted>
+        ) : (
+          <WeekSchedule schedule={schedule} start={start} compact />
+        )}
       </section>
 
       <section className="min-w-0 rounded-2xl border border-border bg-surface p-5 lg:col-span-2">

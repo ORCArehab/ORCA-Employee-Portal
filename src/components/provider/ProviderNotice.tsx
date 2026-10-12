@@ -13,3 +13,4 @@ export function ProviderNotice({ children }: { children: React.ReactNode }) {
 export const NOT_LINKED =
   "Your sign-in isn't linked to your provider record yet, so there's nothing to show. Ask ORCA's admin team to link it.";
 export const LOAD_FAILED = "This couldn't be loaded right now. Please try again in a moment.";
+export const NOT_PUBLISHED = "This week's schedule hasn't been published yet. It appears here as soon as ORCA's operations team sends it out.";
