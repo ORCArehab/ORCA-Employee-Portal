@@ -77,3 +77,12 @@ describe("hospital logins", () => {
     expect(loginProblem(f([login({ system: "pcc", status: "disabled" })]))).toBe("PCC not working");
   });
 });
+
+describe("published weeks", () => {
+  it("treats a week as published unless the API says it isn't", async () => {
+    const { isPublished } = await import("./types");
+    expect(isPublished({ unpublishedWeeks: ["2026-10-19"] }, "2026-10-12")).toBe(true);
+    expect(isPublished({ unpublishedWeeks: ["2026-10-19"] }, "2026-10-19")).toBe(false);
+    expect(isPublished({}, "2026-10-12")).toBe(true); // older API
+  });
+});
