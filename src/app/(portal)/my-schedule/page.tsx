@@ -3,12 +3,12 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { BrandAccent } from "@/components/ui/BrandAccent";
-import { LOAD_FAILED, NOT_LINKED, ProviderNotice } from "@/components/provider/ProviderNotice";
+import { LOAD_FAILED, NOT_LINKED, NOT_PUBLISHED, ProviderNotice } from "@/components/provider/ProviderNotice";
 import { WeekSchedule } from "@/components/provider/WeekSchedule";
 import { getCurrentUser } from "@/lib/auth";
 import { hasRole } from "@/lib/permissions";
 import { getMySchedule } from "@/lib/provider/api";
-import type { MySchedule } from "@/lib/provider/types";
+import { isPublished, type MySchedule } from "@/lib/provider/types";
 import { addDays, isIsoDate, today, weekLabel, weekStart } from "@/lib/provider/week";
 
 export const metadata: Metadata = { title: "My Schedule" };
@@ -34,7 +34,7 @@ export default async function MySchedulePage({ searchParams }: PageProps<"/my-sc
     <div>
       <header className="mb-6">
         <h1 className="font-serif text-2xl font-semibold text-orca-navy-900 sm:text-3xl">My Schedule</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Where you&apos;re scheduled each day. Questions about your schedule go to ORCA&apos;s operations team.</p>
+        <p className="mt-2 text-sm text-muted-foreground">Where you&apos;re scheduled each day, as published by ORCA&apos;s operations team. Questions about your schedule go to them.</p>
         <BrandAccent className="mt-4" />
       </header>
 
@@ -59,6 +59,8 @@ export default async function MySchedulePage({ searchParams }: PageProps<"/my-sc
         <ProviderNotice>{LOAD_FAILED}</ProviderNotice>
       ) : !schedule.linked ? (
         <ProviderNotice>{NOT_LINKED}</ProviderNotice>
+      ) : !isPublished(schedule, start) ? (
+        <ProviderNotice>{NOT_PUBLISHED}</ProviderNotice>
       ) : (
         <section className="rounded-2xl border border-border bg-surface px-5 py-2">
           <WeekSchedule schedule={schedule} start={start} />

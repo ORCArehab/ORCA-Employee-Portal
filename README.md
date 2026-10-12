@@ -187,7 +187,9 @@ People with the **Provider** role see **My Schedule** and **My Facilities** in t
 through their linked staff record; the portal never sends a staff id. A sign-in that isn't linked
 to a staff record yet sees a note saying so. Links are made in ORCA Admin.
 
-- **Schedule** is read-only here. ORCA Admin's schedule board is where it's kept.
+- **Schedule** is read-only here, and shows the **published** schedule: a week appears once
+  ORCA's operations team sends it from ORCA Admin's schedule board, and stays as sent until they
+  send again. A week not sent yet says "hasn't been published yet", not "nothing scheduled".
 - **Facilities** are the ones ORCA has assigned the provider to (in ORCA Admin).
 - **Hospital logins:** for PointClickCare or any other hospital system (named, for example
   "Workspace / Fluency Flex"). Providers add, update or delete their own username, password,
