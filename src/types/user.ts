@@ -6,7 +6,7 @@
  * for how these gate access, rather than scattering role checks through the
  * app.
  */
-export const PORTAL_ROLES = ["ADMIN", "HR", "IT", "PROVIDER", "SCRIBE"] as const;
+export const PORTAL_ROLES = ["ADMIN", "HR", "HIM", "IT", "PROVIDER", "SCRIBE"] as const;
 
 export type PortalRole = (typeof PORTAL_ROLES)[number];
 

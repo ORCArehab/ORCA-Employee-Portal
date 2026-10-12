@@ -15,6 +15,7 @@ const ROLE_LABELS: Record<PortalRole, string> = {
   ADMIN: "Admin",
   IT: "IT",
   HR: "HR",
+  HIM: "HIM",
 };
 
 export function Sidebar({

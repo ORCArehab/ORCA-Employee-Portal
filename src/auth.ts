@@ -10,10 +10,11 @@ const allowedDomain = getAllowedGoogleDomain();
 
 /**
  * How often a session re-fetches the person's roles (and a fresh ORCA API
- * token). Role changes show up in the portal's navigation within this long;
- * the API itself enforces them immediately.
+ * token). Role changes show up in the portal (tiles, navigation) on the next page
+ * load after this long; the API itself enforces them immediately. Kept short so
+ * someone just given a role sees it within a minute, not ten.
  */
-const ROLE_REFRESH_INTERVAL_MS = 10 * 60 * 1000;
+const ROLE_REFRESH_INTERVAL_MS = 60 * 1000;
 
 const SIGN_IN_ERRORS: Record<Extract<SignInOutcome, { ok: false }>["reason"], string> = {
   disabled: "AccountDisabled",
