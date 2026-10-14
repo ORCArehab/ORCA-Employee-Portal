@@ -1,27 +1,44 @@
+import Link from "next/link";
 import { Megaphone } from "lucide-react";
 import type { Announcement } from "@/types/portal";
 
 export function AnnouncementsPanel({
   announcements,
+  limit,
 }: {
   announcements: Announcement[];
+  /** Caps how many show here (the dashboard preview); unset shows all (the /announcements page). */
+  limit?: number;
 }) {
+  const visible = limit ? announcements.slice(0, limit) : announcements;
+  const hasMore = limit !== undefined && announcements.length > limit;
+
   return (
     <section className="rounded-2xl border border-border bg-surface p-5">
-      <div className="flex items-center gap-2">
-        <Megaphone className="h-4.5 w-4.5 text-orca-gold-500" aria-hidden="true" />
-        <h2 className="text-sm font-semibold text-orca-navy-900">
-          ORCA Announcements
-        </h2>
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <Megaphone className="h-4.5 w-4.5 text-orca-gold-500" aria-hidden="true" />
+          <h2 className="text-sm font-semibold text-orca-navy-900">
+            ORCA Announcements
+          </h2>
+        </div>
+        {hasMore && (
+          <Link
+            href="/announcements"
+            className="text-xs font-medium text-orca-navy-700 hover:text-orca-navy-900"
+          >
+            View all
+          </Link>
+        )}
       </div>
 
-      {announcements.length === 0 ? (
+      {visible.length === 0 ? (
         <p className="mt-4 text-sm text-muted-foreground">
           No new announcements.
         </p>
       ) : (
         <ul className="mt-4 space-y-4">
-          {announcements.map((a) => (
+          {visible.map((a) => (
             <li key={a.id} className="border-t border-border pt-3 first:border-t-0 first:pt-0">
               <p className="text-sm font-medium text-orca-navy-900">{a.title}</p>
               <p className="mt-0.5 text-sm text-muted-foreground">{a.body}</p>

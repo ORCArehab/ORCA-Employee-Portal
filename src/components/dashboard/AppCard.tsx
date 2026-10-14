@@ -21,7 +21,7 @@ export function AppCard({ app }: { app: PortalApp }) {
 
   if (logoSrc && logoVariant === "tile") {
     tile = (
-      <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl">
+      <div className="h-12 w-12 shrink-0 overflow-hidden rounded-xl">
         <Image
           src={logoSrc}
           alt={name}
@@ -34,7 +34,7 @@ export function AppCard({ app }: { app: PortalApp }) {
   } else if (logoSrc && logoVariant === "wordmark") {
     tile = (
       <div
-        className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl p-2"
+        className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl p-2"
         style={{ backgroundColor: `#${brandColor}` }}
       >
         <Image
@@ -49,7 +49,7 @@ export function AppCard({ app }: { app: PortalApp }) {
   } else if (logoSrc) {
     tile = (
       <div
-        className="flex h-14 w-14 items-center justify-center rounded-xl p-2.5"
+        className="flex h-12 w-12 items-center justify-center rounded-xl p-2.5"
         style={brandColor ? { backgroundColor: `#${brandColor}26` } : undefined}
       >
         <Image
@@ -64,20 +64,20 @@ export function AppCard({ app }: { app: PortalApp }) {
   } else if (brandColor) {
     tile = (
       <div
-        className="flex h-14 w-14 items-center justify-center rounded-xl"
+        className="flex h-12 w-12 items-center justify-center rounded-xl"
         style={{ backgroundColor: `#${brandColor}26`, color: `#${brandColor}` }}
       >
         {brandIconPath ? (
           <svg
             viewBox="0 0 24 24"
-            className="h-7 w-7"
+            className="h-6 w-6"
             fill="currentColor"
             aria-hidden="true"
           >
             <path d={brandIconPath} />
           </svg>
         ) : (
-          <Icon className="h-7 w-7" aria-hidden="true" />
+          <Icon className="h-6 w-6" aria-hidden="true" />
         )}
       </div>
     );
@@ -86,11 +86,11 @@ export function AppCard({ app }: { app: PortalApp }) {
       <div
         className={
           isExternal
-            ? "flex h-14 w-14 items-center justify-center rounded-xl bg-orca-navy-800/5 text-orca-navy-800"
-            : "flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-orca-navy-800 to-orca-navy-950 text-orca-gold-400 shadow-sm"
+            ? "flex h-12 w-12 items-center justify-center rounded-xl bg-orca-navy-800/5 text-orca-navy-800"
+            : "flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-orca-navy-800 to-orca-navy-950 text-orca-gold-400 shadow-sm"
         }
       >
-        <Icon className="h-7 w-7" aria-hidden="true" />
+        <Icon className="h-6 w-6" aria-hidden="true" />
       </div>
     );
   }
@@ -105,7 +105,7 @@ export function AppCard({ app }: { app: PortalApp }) {
         />
       ) : null}
       {tile}
-      <div className="mt-4">
+      <div className="mt-3">
         <h3 className="text-base font-semibold text-orca-navy-900">{name}</h3>
         <p className="mt-0.5 text-sm text-muted-foreground">{description}</p>
       </div>
@@ -113,7 +113,7 @@ export function AppCard({ app }: { app: PortalApp }) {
   );
 
   const className =
-    "app-card group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-surface p-5 shadow-sm transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orca-gold-500";
+    "app-card group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-surface p-4 shadow-sm transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orca-gold-500";
   const style: CSSProperties | undefined = brandColor
     ? ({ "--brand-color": `#${brandColor}` } as CSSProperties)
     : undefined;

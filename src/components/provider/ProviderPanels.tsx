@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { AlertCircle, Building2, CalendarDays, ChevronRight } from "lucide-react";
+import { Building2, CalendarDays } from "lucide-react";
 import { getMyFacilities, getMySchedule } from "@/lib/provider/api";
 import { addDays, today, weekLabel, weekStart } from "@/lib/provider/week";
-import { assignmentText, loginProblem } from "./FacilityLines";
 import { isPublished } from "@/lib/provider/types";
 import { LOAD_FAILED, NOT_LINKED, NOT_PUBLISHED } from "./ProviderNotice";
 import { WeekSchedule } from "./WeekSchedule";
+import { MyFacilitiesCard } from "./MyFacilitiesCard";
 
 /** Dashboard panels for providers: this week's schedule and My Facilities. Each loads on its own. */
 export async function ProviderPanels() {
@@ -26,12 +26,23 @@ export async function ProviderPanels() {
         ) : !isPublished(schedule, start) ? (
           <Muted>{NOT_PUBLISHED}</Muted>
         ) : (
-          <WeekSchedule schedule={schedule} start={start} compact />
+          // Bounded so a busy week can't push the rest of the dashboard
+          // down indefinitely; the full week is still one scroll away, and
+          // the whole thing via "Full schedule" above.
+          <div className="max-h-[27rem] overflow-y-auto">
+            <WeekSchedule schedule={schedule} start={start} compact />
+          </div>
         )}
       </section>
 
       <section className="min-w-0 rounded-2xl border border-border bg-surface p-5 lg:col-span-2">
-        <PanelHeading icon={<Building2 className="h-4.5 w-4.5 text-orca-gold-500" aria-hidden="true" />} title="My facilities" href="/my-facilities" link="Hospital logins" />
+        <PanelHeading
+          icon={<Building2 className="h-4.5 w-4.5 text-orca-gold-500" aria-hidden="true" />}
+          title="My facilities"
+          detail={facilities && facilities.linked && facilities.facilities.length > 0 ? `${facilities.facilities.length} assigned` : undefined}
+          href="/my-facilities"
+          link="Hospital logins"
+        />
         {!facilities ? (
           <Muted>{LOAD_FAILED}</Muted>
         ) : !facilities.linked ? (
@@ -39,24 +50,7 @@ export async function ProviderPanels() {
         ) : facilities.facilities.length === 0 ? (
           <Muted>You aren&apos;t assigned to any facilities yet.</Muted>
         ) : (
-          <ul className="divide-y divide-border">
-            {facilities.facilities.map((f) => (
-              <li key={f.id}>
-                <Link href={`/my-facilities#facility-${f.id}`} className="group flex items-center gap-3 py-2.5">
-                  <span className="min-w-0 flex-1">
-                    <span className="block break-words text-sm font-medium text-orca-navy-900 group-hover:text-orca-navy-700">{f.name}</span>
-                    <span className="block text-xs text-muted-foreground">{assignmentText(f)}</span>
-                  </span>
-                  {loginProblem(f) && (
-                    <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-orca-gold-050 px-2 py-0.5 text-[11px] font-medium text-orca-navy-900">
-                      <AlertCircle className="h-3 w-3" aria-hidden="true" /> {loginProblem(f)}
-                    </span>
-                  )}
-                  <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <MyFacilitiesCard facilities={facilities.facilities} />
         )}
       </section>
     </div>

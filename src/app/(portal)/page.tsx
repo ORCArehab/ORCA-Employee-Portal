@@ -38,7 +38,7 @@ export default async function DashboardPage() {
             <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               Your Apps
             </h2>
-            <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {apps.map((app) => (
                 <AppCard key={app.id} app={app} />
               ))}
@@ -66,7 +66,7 @@ export default async function DashboardPage() {
         </div>
 
         <div className="space-y-8">
-          <AnnouncementsPanel announcements={announcements} />
+          <AnnouncementsPanel announcements={announcements} limit={3} />
         </div>
       </div>
     </div>
