@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, MapPinned } from "lucide-react";
 import { BrandAccent } from "@/components/ui/BrandAccent";
 import { FacilityDirectory } from "@/components/facilities/FacilityDirectory";
 import { facilitiesMap } from "@/config/facilities";
@@ -7,7 +7,7 @@ import { getFacilities } from "@/lib/orgDirectory";
 
 export const metadata: Metadata = { title: "Facilities" };
 
-/** The list is live from the ORCA API on every visit; the map is ORCA's Google My Maps. */
+/** The list below is live from the ORCA API on every visit; the map is a Google Maps list, linked out (Google doesn't support embedding lists). */
 export default async function FacilitiesPage() {
   const facilities = await getFacilities();
   return (
@@ -22,24 +22,25 @@ export default async function FacilitiesPage() {
         <BrandAccent className="mt-4" />
       </header>
 
-      <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
-        <iframe
-          src={facilitiesMap.embedUrl}
-          title="Map of ORCA Rehab facilities"
-          className="block h-[280px] sm:h-[340px] w-full border-0"
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          allowFullScreen
-        />
-      </div>
       <a
-        href={facilitiesMap.viewUrl}
+        href={facilitiesMap.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-orca-navy-700 hover:text-orca-navy-900"
+        className="group flex flex-col items-start gap-4 rounded-2xl border border-border bg-surface p-5 shadow-sm transition hover:border-orca-navy-800/20 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orca-gold-500 sm:flex-row sm:items-center sm:justify-between"
       >
-        Open map in Google Maps
-        <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+        <div className="flex items-center gap-4">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-orca-sky-050 text-orca-sky-500">
+            <MapPinned className="h-6 w-6" aria-hidden="true" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-orca-navy-900">ORCA Facilities map</p>
+            <p className="text-xs text-muted-foreground">Opens in Google Maps, in a new tab.</p>
+          </div>
+        </div>
+        <span className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-orca-navy-900 px-4 py-2 text-sm font-medium text-white transition group-hover:bg-orca-navy-800">
+          Open in Google Maps
+          <ExternalLink className="h-4 w-4" aria-hidden="true" />
+        </span>
       </a>
 
       {facilities === null ? (
