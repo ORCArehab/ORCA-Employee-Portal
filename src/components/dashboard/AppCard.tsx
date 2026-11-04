@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Lock } from "lucide-react";
 import type { CSSProperties } from "react";
 import type { PortalApp } from "@/types/portal";
 
@@ -14,6 +15,7 @@ export function AppCard({ app }: { app: PortalApp }) {
     brandIconPath,
     logoSrc,
     logoVariant = "icon",
+    disabled,
   } = app;
   const isExternal = visibility === "external";
 
@@ -107,7 +109,14 @@ export function AppCard({ app }: { app: PortalApp }) {
       {tile}
       <div className="mt-3">
         <h3 className="text-base font-semibold text-orca-navy-900">{name}</h3>
-        <p className="mt-0.5 text-sm text-muted-foreground">{description}</p>
+        {disabled ? (
+          <span className="mt-0.5 inline-flex items-center gap-1 text-sm font-medium text-muted-foreground">
+            <Lock className="h-3.5 w-3.5" aria-hidden="true" />
+            Coming soon
+          </span>
+        ) : (
+          <p className="mt-0.5 text-sm text-muted-foreground">{description}</p>
+        )}
       </div>
     </>
   );
@@ -117,6 +126,17 @@ export function AppCard({ app }: { app: PortalApp }) {
   const style: CSSProperties | undefined = brandColor
     ? ({ "--brand-color": `#${brandColor}` } as CSSProperties)
     : undefined;
+
+  if (disabled) {
+    return (
+      <div
+        aria-disabled="true"
+        className="app-card relative flex flex-col overflow-hidden rounded-2xl border border-dashed border-border bg-surface/60 p-4 opacity-70"
+      >
+        {content}
+      </div>
+    );
+  }
 
   if (isExternal) {
     return (

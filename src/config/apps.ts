@@ -138,6 +138,8 @@ export const portalApps: PortalApp[] = [
     logoSrc: "/brand/claimocity-icon.png",
     // Approximate color sampled from the icon itself, for the tile tint.
     brandColor: "4661E6",
+    // Still being set up — card shows "Coming soon" and isn't clickable. Flip off once it's ready.
+    disabled: true,
   },
   {
     // ORCA's own admin app (ORCA_Admin_Board): operations, employee records, and people & roles.
