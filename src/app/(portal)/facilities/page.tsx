@@ -1,18 +1,21 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { ExternalLink } from "lucide-react";
 import { BrandAccent } from "@/components/ui/BrandAccent";
 import { FacilityDirectory } from "@/components/facilities/FacilityDirectory";
-import { FacilityMapView } from "@/components/facilities/FacilityMapView";
+import { FacilityMapSection } from "@/components/facilities/FacilityMapSection";
 import { facilitiesMap } from "@/config/facilities";
 import { getFacilities } from "@/lib/orgDirectory";
-import { getFacilityPins } from "@/lib/facilityPins";
 
 export const metadata: Metadata = { title: "Facilities" };
 
-/** The map and the list below it are both live from the ORCA API on every visit — add a facility in ORCA Admin and it appears in both, no map maintenance required. */
+/**
+ * The list is live from the ORCA API on every visit. The map (below) streams
+ * in separately via Suspense — geocoding a facility no one's visited since
+ * can take a while, and that must never hold up this page itself.
+ */
 export default async function FacilitiesPage() {
   const facilities = await getFacilities();
-  const pins = facilities ? await getFacilityPins(facilities) : [];
 
   return (
     <div>
@@ -38,7 +41,15 @@ export default async function FacilitiesPage() {
       </header>
 
       <div className="mb-8">
-        <FacilityMapView pins={pins} />
+        <Suspense
+          fallback={
+            <div className="flex h-[420px] animate-pulse items-center justify-center rounded-2xl border border-border bg-surface text-sm text-muted-foreground sm:h-[480px]">
+              Loading map...
+            </div>
+          }
+        >
+          <FacilityMapSection facilities={facilities} />
+        </Suspense>
       </div>
 
       {facilities === null ? (
