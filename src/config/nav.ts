@@ -9,6 +9,7 @@ import {
   UserSearch,
   CalendarDays,
   Building2,
+  HardDrive,
 } from "lucide-react";
 import type { NavItem } from "@/types/portal";
 
@@ -18,6 +19,7 @@ export const primaryNav: NavItem[] = [
   { id: "my-facilities", label: "My Facilities", href: "/my-facilities", icon: Building2, allowedRoles: ["PROVIDER"] },
   { id: "apps", label: "Apps", href: "/apps", icon: LayoutGrid },
   { id: "resources", label: "Resources", href: "/resources", icon: BookOpen },
+  { id: "shared-drive", label: "Shared Drive", href: "/shared-drive", icon: HardDrive },
   { id: "forms", label: "Forms", href: "/forms", icon: ClipboardList },
   { id: "facilities", label: "Facilities", href: "/facilities", icon: MapPin },
   { id: "directory", label: "Directory", href: "/directory", icon: Users },
